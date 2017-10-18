@@ -83,31 +83,50 @@
 		    </c:forEach>
 	    </tbody>
 	  </table>
-
+ 	
 	<h3 class="page-header">통계<small> 차트 확인</small></h3>
+	
+	<script>
+		var mdate = ["1999-01-01"];
+		var mpageView = [3];
+	</script>
+	<c:forEach var="pageView" items="${pageViews}" varStatus="status">
+		<script>
+			mdate.push("${pageView.mDate}");
+			mpageView.push(${pageView.mPageView});
+		</script>		
+    </c:forEach> 	
 	
 	<script type="text/javascript">
 	window.onload = function () {
-		var chart = new CanvasJS.Chart("chartContainer",
-		{
-			theme: "theme2",
-			title:{
-				text: "통계"
-			},
-			data: [{
-				type: "pie",
-				showInLegend: true,
-				toolTipContent: "{y} - #percent %",
-				yValueFormatString: "#0.#,,. Million",
-				legendText: "{indexLabel}",
-				dataPoints: [
-					{  y: <%=4%>, indexLabel: "테스트_아이템_1" },
-					{  y: <%=3%>, indexLabel: "테스트_아이템_2" }
-				]
-			}]
-		});
-		chart.render();
-	}
+
+	    var chart = new CanvasJS.Chart("chartContainer",
+	    {
+	      zoomEnabled: true,
+	      title:{
+	        text: "일별 페이지뷰 조회"
+	      },
+	      axisY:{
+	        includeZero: false
+	      },
+	      data: data,  // random generator below
+
+	   });
+
+	    chart.render();
+	  }
+	
+	    var data = []; var dataSeries = { type: "line" };
+	    var dataPoints = [];
+	    for (var i = 1; i < mdate.length; i ++) {
+	    	
+	         dataPoints.push({
+	          x: new Date(mdate[i]),
+	          y: mpageView[i]
+	           });
+	        }
+	     dataSeries.dataPoints = dataPoints;
+	     data.push(dataSeries);	    
 	
 	</script>
 	<script src="/resources/js/canvasjs.min.js"></script>

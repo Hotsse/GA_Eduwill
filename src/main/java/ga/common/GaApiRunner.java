@@ -5,8 +5,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -40,9 +45,9 @@ public class GaApiRunner {
 	
 	
 	//애널리틱스 인증 정보
-	private final String APPLICATION_NAME = "My Test Reporting";
+	private final String APPLICATION_NAME = "Eduwill_Internship_GA_Project";
 	private final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance(); // GsonFactory.getDefaultInstance()
-	private final String KEY_FILE_LOCATION = "client_secrets_edw.json"; // 프로젝트 루트 폴더에 있는 인증 정보 파일
+	private final String KEY_FILE_LOCATION = "client_secrets_edw.json"; // /resources/secret_key 에 들어가는 인증 정보
 	
 	private final String VIEW_ID = "66471933"; // View ID 는 ga-dev-tools.appsport.com/account-explorer/
 
@@ -56,6 +61,7 @@ public class GaApiRunner {
 
 			//날짜 입력이 올바른 상태에서만 실행
 			if(startDate != null && endDate != null) {
+				
 				//쿼리를 실행 시켜서
 				GetReportsResponse response = getReport(service, seq, startDate, endDate);
 			
@@ -68,6 +74,28 @@ public class GaApiRunner {
 		}
 		
 		return tmp;		
+	}
+	
+	public ArrayList<PageViewVO> getPageViewsforDay(String seq, String startDate, String endDate){
+		
+		ArrayList<PageViewVO> tmp = null;
+		
+		try {
+			//서비스를 초기화 시키고
+			AnalyticsReporting service = initializeAnalyticsReporting();
+
+			//날짜 입력이 올바른 상태에서만 실행
+			if(startDate != null && endDate != null) {
+			
+				//결과값을 파싱하여 뿌린다
+				tmp = getPageViewinRange(service, seq, startDate, endDate);
+			} 
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return tmp;
 	}
 	/**
 	   * 애널리틱스 보고서 API V4 서비스 객체를 초기화 시키는 메소드.
@@ -83,7 +111,7 @@ public class GaApiRunner {
 		Resource resource = new ClassPathResource("/secret_key/client_secrets_edw.json"); 
 		FileInputStream fis = new FileInputStream(resource.getFile());
 		
-		//그냥 초기화 시키는 듯 하다. 건드리지 말자 ㅎㅎ
+		//HTTP 통신을 초기화 시키고 인증 파일(.json)을 통해서 서비스 객체를 구성하여 반환한다.
 		HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
 		GoogleCredential credential = GoogleCredential
 				.fromStream(fis)
@@ -139,7 +167,6 @@ public class GaApiRunner {
 	    Dimension pageTitle = new Dimension().setName("ga:pagePath");
 	    
 	    System.out.println("필터 적용 : ?masterSeq=" + seq);
-	    
 	    String resultSeq = "masterSeq="+seq; // "masterSeq=" 가 포함되어 있어야함
 	    
 	    //측정 기준 필터 적용~
@@ -195,10 +222,10 @@ public class GaApiRunner {
 	    GetReportsRequest getReport = new GetReportsRequest()
 	        .setReportRequests(requests);
 
-	    // 실제로 데이터를 "쇽" 보내서 실행시키고 결과 값을 "샥" 받는 부분(Execute)
+	    // 상기의 리스트를 GA 서버로 Request 하여 결과 값을 Response 하는 메소드(Execute)
 	    GetReportsResponse response = service.reports().batchGet(getReport).execute();
 
-	    // 결과를 반환 ^오^
+	    // 결과를 반환
 	    return response;
 	  }
 	
@@ -209,20 +236,20 @@ public class GaApiRunner {
 	   */
 	private ArrayList<InformDao> printResponse(GetReportsResponse response) {
 		
-		System.out.println("정보를 받아왔습니다 ^오^");
+		System.out.println("성공적으로 실행했습니다.");
 		  
 		//하나의 response 에는 다수의 report 가 포함되어 있다.
-		//foreach 를 통하 "씹뜯맛즐" 한다.
+		//List를 foreach를 통해 각 객체마다 접근한다.
 		
 		ArrayList<InformDao> list = new ArrayList<InformDao>();
 		
 		int cnt = 0;
 		for (Report report: response.getReports()) {			
 						
-			//하나의 report 에는 하나의 header 밖에 없다. (머두괴는 ㄴㄴ해)
+			//하나의 report 에는 하나의 header 밖에 없다.
 			ColumnHeader header = report.getColumnHeader();			
 			
-			//헤더와 측정 기준, 항목 사이에 하나의 분류가 더 있는 모양이다. 나는 아직 모르겠다.
+			//헤더와 측정 기준, 항목 사이에 하나의 분류가 더 있는 모양이다.
 			List<String> dimensionHeaders = header.getDimensions();
 			List<MetricHeaderEntry> metricHeaders = header.getMetricHeader().getMetricHeaderEntries();
 			List<ReportRow> rows = report.getData().getRows();
@@ -320,5 +347,131 @@ public class GaApiRunner {
 			
 		}
 		return list;
-	}	
+	}
+	
+private ArrayList<PageViewVO> getPageViewinRange(AnalyticsReporting service, String seq, String startDate, String endDate) throws IOException {
+
+	    /* 측정 항목과 측정기준의 객체를 만들고 내용물을 설정한다
+	     * 내용물에 대한 쿼리 레퍼런스는 아래의 링크를 참고하자
+	     * https://developers.google.com/analytics/devguides/reporting/core/dimsmets
+	     */
+	    
+	    //상품 페이지 보고서-----
+	    Metric pageviews = new Metric()
+	        .setExpression("ga:pageviews")
+	        .setAlias("pageviews");
+	    
+	    //디멘션 설정
+	    Dimension pageTitle = new Dimension().setName("ga:pagePath");
+	    Dimension date = new Dimension().setName("ga:date");
+	    
+	    System.out.println("필터 적용 : ?masterSeq=" + seq);
+	    String resultSeq = "masterSeq="+seq; // "masterSeq=" 가 포함되어 있어야함
+	    
+	    //측정 기준 필터 적용~
+	    DimensionFilter nameFilter = new DimensionFilter()
+	    		.setDimensionName("ga:pagePath") // {{pagePath}} 에
+	    		.setExpressions(Arrays.asList(resultSeq));
+	    
+	    DimensionFilterClause dFilterClause = new DimensionFilterClause()
+	    		.setFilters(Arrays.asList(nameFilter));
+	    
+	    
+	    // 테스팅				
+	    ArrayList<PageViewVO> allPageViews = new ArrayList<PageViewVO>();
+
+		DateRange dateRange = new DateRange();
+	    dateRange.setStartDate(startDate);
+	    dateRange.setEndDate(endDate);
+	    
+		
+		// 위의 항목과 기준을 구글로 Request 하기 위한 객체를 만든다
+		ReportRequest request = new ReportRequest()
+				.setViewId(VIEW_ID)
+				.setDateRanges(Arrays.asList(dateRange))
+				.setMetrics(Arrays.asList(pageviews))
+				.setDimensions(Arrays.asList(pageTitle, date))
+				.setDimensionFilterClauses(Arrays.asList(dFilterClause));
+
+		// 리스트에 모두 싣습니다~
+		ArrayList<ReportRequest> requests = new ArrayList<ReportRequest>();
+		requests.add(request);
+
+		// 아마 Request 한 것에 대한 결과를 Receive 하는 객체를 만드는 듯 하다
+		GetReportsRequest getReport = new GetReportsRequest().setReportRequests(requests);
+
+		// 상기의 리스트를 GA 서버로 Request 하여 결과 값을 Response 하는 메소드(Execute)
+		GetReportsResponse response = service.reports().batchGet(getReport).execute();
+
+		for (Report report : response.getReports()) {
+
+			// 하나의 report 에는 하나의 header 밖에 없다.
+			ColumnHeader header = report.getColumnHeader();
+
+			// 헤더와 측정 기준, 항목 사이에 하나의 분류가 더 있는 모양이다.
+			List<String> dimensionHeaders = header.getDimensions();
+			List<MetricHeaderEntry> metricHeaders = header.getMetricHeader().getMetricHeaderEntries();
+			List<ReportRow> rows = report.getData().getRows();
+
+			if (rows == null) {
+				System.out.println("No data found for " + VIEW_ID);
+				return null;
+			}
+
+			for (ReportRow row : rows) {
+				
+				PageViewVO vo = new PageViewVO();
+				
+				
+				List<String> dimensions = row.getDimensions();
+				List<DateRangeValues> metrics = row.getMetrics();
+
+				for (int i = 0; i < dimensionHeaders.size() && i < dimensions.size(); i++) {
+					if(dimensionHeaders.get(i).equals("ga:date")) {
+						String diHeader = dimensions.get(i);
+						String str = String.format("%s-%s-%s", diHeader.substring(0, 4), diHeader.substring(4, 6), diHeader.substring(6, 8));
+						vo.setmDate(str);
+					}
+				}
+
+				for (int j = 0; j < metrics.size(); j++) {
+					DateRangeValues values = metrics.get(j);
+
+					int pv = 0;
+					for (int k = 0; k < values.getValues().size() && k < metricHeaders.size(); k++) {
+						if (metricHeaders.get(k).getName().equals("pageviews")) {
+							pv += Integer.parseInt(values.getValues().get(k));
+						}							
+					}
+					
+					vo.setmPageView(pv);
+				}
+				
+				Boolean flag = false;
+				int idx = -1;
+				for(PageViewVO tmp : allPageViews) {
+					if(tmp.getmDate().equals(vo.getmDate())) {
+						flag=true;
+						idx = allPageViews.indexOf(tmp);
+					}
+				}
+				if(idx != -1) {
+					vo.setmPageView(vo.getmPageView() + allPageViews.get(idx).getmPageView());
+					allPageViews.set(idx, vo);
+				}
+				else allPageViews.add(vo);
+			}
+		}
+		
+		Collections.sort(allPageViews, new Comparator<PageViewVO>(){
+		      public int compare(PageViewVO obj1, PageViewVO obj2)
+		      {
+		            // TODO Auto-generated method stub
+		            return obj1.getmDate().compareToIgnoreCase(obj2.getmDate());
+		      }
+		});
+		
+		// 결과를 반환
+		return allPageViews;
+	}
 }

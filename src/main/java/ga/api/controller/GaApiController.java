@@ -29,25 +29,28 @@ import ga.common.GaApiRunner;
 @Controller
 public class GaApiController {
 	
+	//Inject GA API Service to execute GA API logics;
 	@Autowired
 	private GaApiService gaApiService;
 	
+	//Inject MyBatis(for merchandise) Service to execute MyBatis logics;
 	@Autowired
 	private MercService mercService;
 
-	
+	//welcome & list merchandises
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(@RequestParam Map<String, Object> param, ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
-		mercService.ListAll(param, model, request, response);
+		mercService.ListAll(param, model, request, response); //call service;
 		
 		return "home";
 	}
 	
+	//showing api information
 	@RequestMapping("/analytics")
 	public String main(@RequestParam Map<String, Object> param, ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
-		gaApiService.runApi(param, model, request, response);
+		gaApiService.runApi(param, model, request, response); //call service;
 		
 		return "runApi";
 	}

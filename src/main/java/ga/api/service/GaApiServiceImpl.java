@@ -13,6 +13,7 @@ import org.springframework.ui.ModelMap;
 
 import ga.common.GaApiRunner;
 import ga.common.InformDao;
+import ga.common.PageViewVO;
 
 @Service
 public class GaApiServiceImpl implements GaApiService {
@@ -35,6 +36,20 @@ public class GaApiServiceImpl implements GaApiService {
 		
 		model.addAttribute("seq", seq);
 		model.addAttribute("result", gaApiRunner.print(seq, startDate, endDate));
+		
+		ArrayList<PageViewVO> list = gaApiRunner.getPageViewsforDay(seq, startDate, endDate);
+		
+		if(list != null) {
+			System.out.println("일별 페이지뷰 조회 통계 결과");
+			for(PageViewVO vo : list) {
+				System.out.println("=================================");
+				System.out.println("Date : " + vo.getmDate());
+				System.out.println("PageView : " + vo.getmPageView());
+				System.out.println("=================================");
+			}
+		}
+		
+		model.addAttribute("pageViews", list);
 		
 		return ;
 	}
