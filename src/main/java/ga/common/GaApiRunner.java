@@ -355,6 +355,11 @@ private ArrayList<PageViewVO> getPageViewinRange(AnalyticsReporting service, Str
 	     * 내용물에 대한 쿼리 레퍼런스는 아래의 링크를 참고하자
 	     * https://developers.google.com/analytics/devguides/reporting/core/dimsmets
 	     */
+	
+		 //기간 설정
+		DateRange dateRange = new DateRange();
+	    dateRange.setStartDate(startDate);
+	    dateRange.setEndDate(endDate);
 	    
 	    //상품 페이지 보고서-----
 	    Metric pageviews = new Metric()
@@ -377,13 +382,8 @@ private ArrayList<PageViewVO> getPageViewinRange(AnalyticsReporting service, Str
 	    		.setFilters(Arrays.asList(nameFilter));
 	    
 	    
-	    // 테스팅				
+	    //일별 페이지뷰 정보를 저장하는 ArrayList
 	    ArrayList<PageViewVO> allPageViews = new ArrayList<PageViewVO>();
-
-		DateRange dateRange = new DateRange();
-	    dateRange.setStartDate(startDate);
-	    dateRange.setEndDate(endDate);
-	    
 		
 		// 위의 항목과 기준을 구글로 Request 하기 위한 객체를 만든다
 		ReportRequest request = new ReportRequest()
