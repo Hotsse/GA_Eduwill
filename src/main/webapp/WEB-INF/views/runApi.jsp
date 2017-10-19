@@ -13,14 +13,33 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
-<body>
+<body id="myPage" data-spy="scroll" data-target=".navbar" data-offset="60">
+
+	<!-- top nav -->
+	<nav class="navbar navbar-inverse">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+				<span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#">상품 관리</a>
+		</div>
+		<div class="collapse navbar-collapse" id="myNavbar">
+			<ul class="nav navbar-nav">
+				<li><a href="#Calendar">기간 선택</a></li>
+				<li><a href="#Information">상품 정보</a></li>
+				<li><a href="#Chart">통계</a></li>
+			</ul>
+		</div>
+	</div>
+	</nav>
 	
 	<!-- main conatiner -->
 	<div class="container-fluid text-center">
 		<div class="row content">
 		
 			<!-- 기간 선택 -->
-			<div class="col-sm-12 text-left">
+			<div class="col-sm-12 text-left" id="Calendar">
 				<h3 class="page-header">
 					기간 선택<small> 시작일 / 종료일</small>
 				</h3>
@@ -39,7 +58,7 @@
 			</div>
 			
 			<!-- 상품 정보 -->
-			<div class="col-sm-12 text-left">
+			<div class="col-sm-12 text-left" id="Information">
 
 				<h3 class="page-header">
 					상품 정보<small> 수치 확인</small>
@@ -97,7 +116,7 @@
 					</div>
 					
 					<!-- 통계(차트확인) -->
-					<div class="col-sm-12 text-left">
+					<div class="col-sm-12 text-left" id="Chart">
 						<h3 class="page-header">
 							통계<small> 차트 확인</small>
 						</h3>
@@ -154,6 +173,30 @@
 
 		</div>
 	</div>
-
+	<script>
+	$(document).ready(function(){
+		
+	  $(".navbar a, footer a[href='#myPage']").on('click', function(event) {
+	    // Make sure this.hash has a value before overriding default behavior
+	    if (this.hash !== "") {
+	      // Prevent default anchor click behavior
+	      event.preventDefault();
+	
+	      // Store hash
+	      var hash = this.hash;
+	
+	      // Using jQuery's animate() method to add smooth page scroll
+	      // The optional number (900) specifies the number of milliseconds it takes to scroll to the specified area
+	      $('html, body').animate({
+	        scrollTop: $(hash).offset().top
+	      }, 900, function(){
+	   
+	        // Add hash (#) to URL when done scrolling (default click behavior)
+	        window.location.hash = hash;
+	      });
+	    } // End if
+	  });
+	});
+	</script>
 </body>
 </html>

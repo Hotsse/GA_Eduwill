@@ -40,6 +40,10 @@
 	font-size:14px !important;
 }
 
+.nav .navbar-nav > li{
+	color:white;
+}
+
 .active{
 	color:black !important;
 	font-weight:bold;
