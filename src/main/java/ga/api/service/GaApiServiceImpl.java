@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
 import ga.common.GaApiRunner;
-import ga.common.InformDao;
+import ga.common.InformVO;
 import ga.common.PageViewVO;
 
 @Service

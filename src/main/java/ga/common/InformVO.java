@@ -1,6 +1,6 @@
 package ga.common;
 
-public class InformDao {
+public class InformVO {
 	private String pagePath;
 	private int pageviews;
 	private int uniquePageviews;

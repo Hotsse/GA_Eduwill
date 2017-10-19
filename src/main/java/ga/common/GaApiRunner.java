@@ -51,9 +51,9 @@ public class GaApiRunner {
 	
 	private final String VIEW_ID = "66471933"; // View ID 는 ga-dev-tools.appsport.com/account-explorer/
 
-	public ArrayList<InformDao> print(String seq, String startDate, String endDate) {		
+	public ArrayList<InformVO> print(String seq, String startDate, String endDate) {		
 		
-		ArrayList<InformDao> tmp = null;
+		ArrayList<InformVO> tmp = null;
 		
 		try {
 			//서비스를 초기화 시키고
@@ -234,14 +234,14 @@ public class GaApiRunner {
 	   *
 	   * @param response An Analytics Reporting API V4 response.
 	   */
-	private ArrayList<InformDao> printResponse(GetReportsResponse response) {
+	private ArrayList<InformVO> printResponse(GetReportsResponse response) {
 		
 		System.out.println("성공적으로 실행했습니다.");
 		  
 		//하나의 response 에는 다수의 report 가 포함되어 있다.
 		//List를 foreach를 통해 각 객체마다 접근한다.
 		
-		ArrayList<InformDao> list = new ArrayList<InformDao>();
+		ArrayList<InformVO> list = new ArrayList<InformVO>();
 		
 		int cnt = 0;
 		for (Report report: response.getReports()) {			
@@ -264,7 +264,7 @@ public class GaApiRunner {
 				
 				for (ReportRow row: rows) {
 					
-					InformDao entity = new InformDao();
+					InformVO entity = new InformVO();
 					
 					List<String> dimensions = row.getDimensions();
 					List<DateRangeValues> metrics = row.getMetrics();
@@ -308,7 +308,7 @@ public class GaApiRunner {
 				
 				for (ReportRow row: rows) {
 					
-					EventDao entity = new EventDao();
+					EventVO entity = new EventVO();
 					
 					List<String> dimensions = row.getDimensions();
 					List<DateRangeValues> metrics = row.getMetrics();
@@ -334,7 +334,7 @@ public class GaApiRunner {
 					}
 					
 					if(entity.getEventCategory().contains("수강신청_클릭")) {
-						for(InformDao en : list) {
+						for(InformVO en : list) {
 							if(entity.getEventAction().contains(en.getPagePath())) {
 								int entry = list.indexOf(en);							
 								en.setTotalEvents(entity.getTotalEvents());

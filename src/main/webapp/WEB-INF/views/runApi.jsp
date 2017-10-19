@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=EUC-KR" pageEncoding="EUC-KR"%>
     
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ page import="java.util.ArrayList, java.text.DecimalFormat, ga.common.InformDao" %>
+<%@ page import="java.text.DecimalFormat" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -67,8 +67,7 @@
 				<div id="resultDisplay"></div>
 				
 				<c:choose>
-					
-					
+				
 					<c:when test="${result eq null}"> <!-- if(result == null) {...} -->
 					<!-- 검색 결과가 존재하지 않음 -->
 						검색 기간을 설정해 주십시오.<br/></div>

@@ -1,6 +1,6 @@
 package ga.common;
 
-public class EventDao {
+public class EventVO {
 
 	private String eventCategory;
 	private String eventAction;
