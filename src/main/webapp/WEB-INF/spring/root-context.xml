@@ -18,6 +18,7 @@
 	<bean id="gaApiService" class="ga.api.service.GaApiServiceImpl" />
 	<bean id="gaApiController" class="ga.api.controller.GaApiController" />	
 	
+	
 	<!-- MyBatis -->
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
       <property name="driverClassName" value="com.mysql.jdbc.Driver" />

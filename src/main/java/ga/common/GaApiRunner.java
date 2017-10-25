@@ -53,7 +53,7 @@ public class GaApiRunner {
 
 	public ArrayList<InformVO> print(String seq, String startDate, String endDate) {		
 		
-		ArrayList<InformVO> tmp = null;
+		ArrayList<InformVO> result = null;
 		
 		try {
 			//서비스를 초기화 시키고
@@ -66,19 +66,19 @@ public class GaApiRunner {
 				GetReportsResponse response = getReport(service, seq, startDate, endDate);
 			
 				//결과값을 파싱하여 뿌린다
-				tmp = printResponse(response);
-			} 
-			
+				result = printResponse(response);
+			}
+
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 		
-		return tmp;		
+		return result;		
 	}
 	
 	public ArrayList<PageViewVO> getPageViewsforDay(String seq, String startDate, String endDate){
 		
-		ArrayList<PageViewVO> tmp = null;
+		ArrayList<PageViewVO> result = null;
 		
 		try {
 			//서비스를 초기화 시키고
@@ -88,14 +88,14 @@ public class GaApiRunner {
 			if(startDate != null && endDate != null) {
 			
 				//결과값을 파싱하여 뿌린다
-				tmp = getPageViewinRange(service, seq, startDate, endDate);
+				result = getPageViewinRange(service, seq, startDate, endDate);
 			} 
 			
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 		
-		return tmp;
+		return result;
 	}
 	/**
 	   * 애널리틱스 보고서 API V4 서비스 객체를 초기화 시키는 메소드.
@@ -109,12 +109,12 @@ public class GaApiRunner {
 	private AnalyticsReporting initializeAnalyticsReporting() throws GeneralSecurityException, IOException {
 		
 		Resource resource = new ClassPathResource("/secret_key/client_secrets_edw.json"); 
-		FileInputStream fis = new FileInputStream(resource.getFile());
+		FileInputStream fileInputStream = new FileInputStream(resource.getFile());
 		
 		//HTTP 통신을 초기화 시키고 인증 파일(.json)을 통해서 서비스 객체를 구성하여 반환한다.
 		HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
 		GoogleCredential credential = GoogleCredential
-				.fromStream(fis)
+				.fromStream(fileInputStream)
 				.createScoped(AnalyticsReportingScopes.all());
 		
 		// Construct the Analytics Reporting service object.
@@ -350,6 +350,7 @@ public class GaApiRunner {
 	}
 	
 private ArrayList<PageViewVO> getPageViewinRange(AnalyticsReporting service, String seq, String startDate, String endDate) throws IOException {
+		
 
 	    /* 측정 항목과 측정기준의 객체를 만들고 내용물을 설정한다
 	     * 내용물에 대한 쿼리 레퍼런스는 아래의 링크를 참고하자
@@ -358,33 +359,28 @@ private ArrayList<PageViewVO> getPageViewinRange(AnalyticsReporting service, Str
 	
 		 //기간 설정
 		DateRange dateRange = new DateRange();
-	    dateRange.setStartDate(startDate);
-	    dateRange.setEndDate(endDate);
-	    
-	    //상품 페이지 보고서-----
-	    Metric pageviews = new Metric()
-	        .setExpression("ga:pageviews")
-	        .setAlias("pageviews");
-	    
-	    //디멘션 설정
-	    Dimension pageTitle = new Dimension().setName("ga:pagePath");
-	    Dimension date = new Dimension().setName("ga:date");
-	    
-	    System.out.println("필터 적용 : ?masterSeq=" + seq);
-	    String resultSeq = "masterSeq="+seq; // "masterSeq=" 가 포함되어 있어야함
-	    
-	    //측정 기준 필터 적용~
-	    DimensionFilter nameFilter = new DimensionFilter()
-	    		.setDimensionName("ga:pagePath") // {{pagePath}} 에
-	    		.setExpressions(Arrays.asList(resultSeq));
-	    
-	    DimensionFilterClause dFilterClause = new DimensionFilterClause()
-	    		.setFilters(Arrays.asList(nameFilter));
-	    
-	    
-	    //일별 페이지뷰 정보를 저장하는 ArrayList
-	    ArrayList<PageViewVO> allPageViews = new ArrayList<PageViewVO>();
-		
+		dateRange.setStartDate(startDate);
+		dateRange.setEndDate(endDate);
+
+		// 상품 페이지 보고서-----
+		Metric pageviews = new Metric().setExpression("ga:pageviews").setAlias("pageviews");
+
+		// 디멘션 설정
+		Dimension pageTitle = new Dimension().setName("ga:pagePath");
+		Dimension date = new Dimension().setName("ga:date");
+
+		System.out.println("필터 적용 : ?masterSeq=" + seq);
+		String resultSeq = "masterSeq=" + seq; // "masterSeq=" 가 포함되어 있어야함
+
+		// 측정 기준 필터 적용~
+		DimensionFilter nameFilter = new DimensionFilter().setDimensionName("ga:pagePath") // {{pagePath}} 에
+				.setExpressions(Arrays.asList(resultSeq));
+
+		DimensionFilterClause dFilterClause = new DimensionFilterClause().setFilters(Arrays.asList(nameFilter));
+
+		// 일별 페이지뷰 정보를 저장하는 ArrayList
+		ArrayList<PageViewVO> allPageViews = new ArrayList<PageViewVO>();
+
 		// 위의 항목과 기준을 구글로 Request 하기 위한 객체를 만든다
 		ReportRequest request = new ReportRequest()
 				.setViewId(VIEW_ID)
@@ -401,7 +397,9 @@ private ArrayList<PageViewVO> getPageViewinRange(AnalyticsReporting service, Str
 		GetReportsRequest getReport = new GetReportsRequest().setReportRequests(requests);
 
 		// 상기의 리스트를 GA 서버로 Request 하여 결과 값을 Response 하는 메소드(Execute)
-		GetReportsResponse response = service.reports().batchGet(getReport).execute();
+		GetReportsResponse response = service.reports()
+				.batchGet(getReport)
+				.execute();
 
 		for (Report report : response.getReports()) {
 
