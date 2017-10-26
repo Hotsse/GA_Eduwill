@@ -3,6 +3,7 @@ package ga.api.dao;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -35,13 +36,15 @@ public class MercDAOImpl implements MercDAO {
 	public void updateDailyData(ArrayList<InformVO> list) throws Exception{
 		
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		Date date = new Date();
-		String today = dateFormat.format(date);
+		
+		final Calendar cal = Calendar.getInstance();
+	    cal.add(Calendar.DATE, -1);
+		String yesterday = dateFormat.format(cal.getTime());
 		
 		for(InformVO vo : list) {
 			DailyInformVO dvo = new DailyInformVO();
 			dvo.setInformVO(vo);
-			dvo.setuDate(today);
+			dvo.setuDate(yesterday);
 			session.insert(namespace+".updateDailyData", dvo);
 		}
 	}

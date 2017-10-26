@@ -61,7 +61,7 @@ public class GaApiController {
 		
 		gaApiService.updateDailyData(param, model, request, response);
 		
-		return "home";
+		return "redirect:/";
 	}
 	
 }

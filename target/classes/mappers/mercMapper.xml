@@ -9,8 +9,8 @@
 	</select>
 	
 	<insert id="updateDailyData">
-	insert into tbl_information (uDate, pagePath, pageviews, uniquePageviews, sessions, exitRate, bounceRate, totalEvents)
-	 values (#{uDate}, #{pagePath}, #{pageviews}, #{uniquePageviews}, #{sessions}, #{exitRate}, #{bounceRate}, #{totalEvents})
+	insert into tbl_information (uDate, pageCode, pageviews, uniquePageviews, sessions, exitRate, bounceRate, totalEvents, eventRate)
+	 values (#{uDate}, #{pageCode}, #{pageviews}, #{uniquePageviews}, #{sessions}, #{exitRate}, #{bounceRate}, #{totalEvents}, #{eventRate})
 	</insert>
 	
 	

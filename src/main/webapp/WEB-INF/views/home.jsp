@@ -29,9 +29,10 @@
 		<div class="collapse navbar-collapse" id="myNavbar">
 			<ul class="nav navbar-nav">
 				<li class="active"><a href="#">상품페이지</a></li>
+				<li><a href="/update_analytics">GA 정보 다운로드</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
-				<li><a href="/update_analytics">GA 정보 다운로드</li>
+				<li><a href="#">로그인</li>
 			</ul>
 		</div>
 	</div>

@@ -1,6 +1,7 @@
 package ga.api.service;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
 import ga.api.dao.MercDAO;
+import ga.api.domain.MercVO;
 import ga.common.GaApiRunner;
 import ga.common.InformVO;
 import ga.common.PageViewVO;
@@ -62,7 +64,18 @@ public class GaApiServiceImpl implements GaApiService {
 	@Override
 	public void updateDailyData(Map<String, Object> param, ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception{
 		
-		ArrayList<InformVO> list = gaApiRunner.getDailyData();
+		List<MercVO> code = dao.listAll();
+		ArrayList<InformVO> list = gaApiRunner.getDailyData(code);
+		
+		if(list != null) {
+			System.out.println("getDailyData Backup 결과");
+			for(InformVO vo : list) {
+				System.out.println("=================================");
+				System.out.println("pageCode : " + vo.getPageCode());
+				System.out.println("pageviews : " + vo.getPageviews());
+				System.out.println("=================================");
+			}
+		}
 		
 		dao.updateDailyData(list);
 	}

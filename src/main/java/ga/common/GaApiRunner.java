@@ -42,6 +42,8 @@ import com.google.api.services.analyticsreporting.v4.model.ReportRow;
 import com.google.api.services.analyticsreporting.v4.model.SegmentDimensionFilter;
 import com.google.api.services.analyticsreporting.v4.model.SegmentFilterClause;
 
+import ga.api.domain.MercVO;
+
 public class GaApiRunner {
 	
 	
@@ -52,23 +54,30 @@ public class GaApiRunner {
 	
 	private final String VIEW_ID = "66471933"; // View ID 는 ga-dev-tools.appsport.com/account-explorer/
 	
-	public ArrayList<InformVO> getDailyData() {
-		ArrayList<InformVO> result = null;
+	public ArrayList<InformVO> getDailyData(List<MercVO> code) {
+		ArrayList<InformVO> result = new ArrayList<InformVO>();
 		
-		try {
-			//서비스를 초기화 시키고
-			AnalyticsReporting service = initializeAnalyticsReporting();
-				
-			//쿼리를 실행 시켜서
-			GetReportsResponse response = getDailyReport(service);
-		
-			//결과값을 파싱하여 뿌린다
-			result = mergeURL(printResponse(response));
+		for(MercVO vo : code) {
+			ArrayList<InformVO> tmp = null;
+			try {
+				//서비스를 초기화 시키고
+				AnalyticsReporting service = initializeAnalyticsReporting();
+					
+				//쿼리를 실행 시켜서
+				GetReportsResponse response = getDailyReport(service, vo.getCode());
 			
+				//결과값을 파싱하여 뿌린다
+				tmp = mergeURL(printResponse(response));
+				
 
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			
+			if(tmp != null) {
+				for(InformVO informVO : tmp) result.add(informVO);
+			}
+		}		
 		
 		return result;		
 	}
@@ -252,6 +261,86 @@ public class GaApiRunner {
 	  }
 	
 	/**
+	   * 애널리틱스 보고서 API V4 를 위한 쿼리를 Send 하는 메소드.
+	   *
+	   * @param service An authorized Analytics Reporting API V4 service object.
+	   * @return GetReportResponse The Analytics Reporting API V4 response.
+	   * @throws IOException
+	*/
+	private GetReportsResponse getDailyReport(AnalyticsReporting service, String seq) throws IOException {
+
+		// 조사할 기간의 범위를 설정한다
+		DateRange dateRange = new DateRange();
+		dateRange.setStartDate("1daysAgo");
+		dateRange.setEndDate("1daysAgo");
+
+		/*
+		 * 측정 항목과 측정기준의 객체를 만들고 내용물을 설정한다 내용물에 대한 쿼리 레퍼런스는 아래의 링크를 참고하자
+		 * https://developers.google.com/analytics/devguides/reporting/core/dimsmets
+		 */
+
+		// 상품 페이지 보고서-----
+		Metric pageviews = new Metric().setExpression("ga:pageviews").setAlias("pageviews");
+
+		Metric uniqueviews = new Metric().setExpression("ga:uniquePageviews").setAlias("uniquePageviews");
+
+		Metric sessions = new Metric().setExpression("ga:sessions").setAlias("sessions");
+
+		Metric exitRate = new Metric().setExpression("ga:exitRate").setAlias("exitRate");
+
+		Metric bounces = new Metric().setExpression("ga:bounces").setAlias("bounces");
+
+		// 디멘션 설정
+		Dimension pageTitle = new Dimension().setName("ga:pagePath");
+
+		System.out.println("필터 적용 : ?masterSeq=" + seq);
+		String resultSeq = "masterSeq=" + seq; // "masterSeq=" 가 포함되어 있어야함
+
+		// 측정 기준 필터 적용~
+		DimensionFilter nameFilter = new DimensionFilter().setDimensionName("ga:pagePath") // {{pagePath}} 에
+				.setExpressions(Arrays.asList(resultSeq));
+
+		DimensionFilterClause dFilterClause = new DimensionFilterClause().setFilters(Arrays.asList(nameFilter));
+
+		// 위의 항목과 기준을 구글로 Request 하기 위한 객체를 만든다
+		ReportRequest request = new ReportRequest().setViewId(VIEW_ID).setDateRanges(Arrays.asList(dateRange))
+				.setMetrics(Arrays.asList(pageviews, uniqueviews, sessions, exitRate, bounces))
+				.setDimensions(Arrays.asList(pageTitle)).setDimensionFilterClauses(Arrays.asList(dFilterClause));
+
+		// 이벤트 보고서-----------------
+		Metric totalEvents = new Metric().setExpression("ga:totalEvents").setAlias("totalEvents");
+
+		// 디멘션 설정
+		Dimension eventCategory = new Dimension().setName("ga:eventCategory");
+		Dimension eventAction = new Dimension().setName("ga:eventAction");
+
+		// 측정 기준 필터 적용~
+		DimensionFilter actionFilter = new DimensionFilter().setDimensionName("ga:eventAction") // {{eventAction}} 에
+				.setExpressions(Arrays.asList(resultSeq));
+
+		DimensionFilterClause actionFilterClause = new DimensionFilterClause().setFilters(Arrays.asList(actionFilter));
+
+		// 위의 항목과 기준을 구글로 Request 하기 위한 객체를 만든다
+		ReportRequest eventRequest = new ReportRequest().setViewId(VIEW_ID).setDateRanges(Arrays.asList(dateRange))
+				.setMetrics(Arrays.asList(totalEvents)).setDimensions(Arrays.asList(eventCategory, eventAction))
+				.setDimensionFilterClauses(Arrays.asList(actionFilterClause));
+
+		// 리스트에 모두 싣습니다~
+		ArrayList<ReportRequest> requests = new ArrayList<ReportRequest>();
+		requests.add(request);
+		requests.add(eventRequest);
+
+		// 아마 Request 한 것에 대한 결과를 Receive 하는 객체를 만드는 듯 하다
+		GetReportsRequest getReport = new GetReportsRequest().setReportRequests(requests);
+
+		// 상기의 리스트를 GA 서버로 Request 하여 결과 값을 Response 하는 메소드(Execute)
+		GetReportsResponse response = service.reports().batchGet(getReport).execute();
+
+		// 결과를 반환
+		return response;
+	}
+	
+	/**
 	   * 애널리틱스로부터 response 한 데이터를 파싱하고 출력하는 메소드.
 	   *
 	   * @param response An Analytics Reporting API V4 response.
@@ -287,6 +376,7 @@ public class GaApiRunner {
 				for (ReportRow row: rows) {
 					
 					InformVO entity = new InformVO();
+					String code = null;
 					
 					List<String> dimensions = row.getDimensions();
 					List<DateRangeValues> metrics = row.getMetrics();
@@ -294,9 +384,13 @@ public class GaApiRunner {
 					for (int i = 0; i < dimensionHeaders.size() && i < dimensions.size(); i++) {
 						System.out.println(dimensionHeaders.get(i) + ": " + dimensions.get(i));
 						if(dimensionHeaders.get(i).equals("ga:pagePath")) {
-							entity.setPageCode(parseCodeInURL(dimensions.get(i)));
+							code = parseCodeInURL(dimensions.get(i));
+							if(code == null)break;
+							else entity.setPageCode(code);
 						}
 					}
+					
+					if(code == null)break;
 					
 					for (int j = 0; j < metrics.size(); j++) {
 						System.out.print("Date Range (" + j + "): ");
@@ -359,6 +453,7 @@ public class GaApiRunner {
 					
 					if(entity.getEventCategory().contains("수강신청_클릭")) {
 						for(InformVO en : list) {
+							if(en.getPageCode() == null)break;
 							if(entity.getEventAction().contains(en.getPageCode())) {
 								int entry = list.indexOf(en);							
 								en.setTotalEvents(entity.getTotalEvents());
@@ -373,111 +468,7 @@ public class GaApiRunner {
 		return list;
 	}
 	
-	/**
-	   * 애널리틱스 보고서 API V4 를 위한 쿼리를 Send 하는 메소드.
-	   *
-	   * @param service An authorized Analytics Reporting API V4 service object.
-	   * @return GetReportResponse The Analytics Reporting API V4 response.
-	   * @throws IOException
-	*/
-	private GetReportsResponse getDailyReport(AnalyticsReporting service) throws IOException {
-		
-	    // 조사할 기간의 범위를 설정한다
-	    DateRange dateRange = new DateRange();
-	    dateRange.setStartDate("1DaysAgo");
-	    dateRange.setEndDate("1DaysAgo");
-
-	    /* 측정 항목과 측정기준의 객체를 만들고 내용물을 설정한다
-	     * 내용물에 대한 쿼리 레퍼런스는 아래의 링크를 참고하자
-	     * https://developers.google.com/analytics/devguides/reporting/core/dimsmets
-	     */
-	    
-	    //상품 페이지 보고서-----
-	    Metric pageviews = new Metric()
-	        .setExpression("ga:pageviews")
-	        .setAlias("pageviews");
-	    
-	    Metric uniqueviews = new Metric()
-		        .setExpression("ga:uniquePageviews")
-		        .setAlias("uniquePageviews");
-	    
-	    Metric sessions = new Metric()
-		        .setExpression("ga:sessions")
-		        .setAlias("sessions");
-	    
-	    Metric exitRate = new Metric()
-		        .setExpression("ga:exitRate")
-		        .setAlias("exitRate");
-	    
-	    Metric bounces = new Metric()
-		        .setExpression("ga:bounces")
-		        .setAlias("bounces");
-	    
-	    //디멘션 설정
-	    Dimension pageTitle = new Dimension().setName("ga:pagePath");
-	    
-	    System.out.println("필터 적용 : ?masterSeq");
-	    String resultSeq = "masterSeq"; // "masterSeq" 가 포함되어 있어야함
-	    
-	    //측정 기준 필터 적용~
-	    DimensionFilter nameFilter = new DimensionFilter()
-	    		.setDimensionName("ga:pagePath") // {{pagePath}} 에
-	    		.setExpressions(Arrays.asList(resultSeq));
-	    
-	    DimensionFilterClause dFilterClause = new DimensionFilterClause()
-	    		.setFilters(Arrays.asList(nameFilter));
-	   
-
-	    // 위의 항목과 기준을 구글로 Request 하기 위한 객체를 만든다
-	    ReportRequest request = new ReportRequest()
-	        .setViewId(VIEW_ID)
-	        .setDateRanges(Arrays.asList(dateRange))
-	        .setMetrics(Arrays.asList(pageviews,uniqueviews,sessions,exitRate,bounces))
-	        .setDimensions(Arrays.asList(pageTitle))
-	        .setDimensionFilterClauses(Arrays.asList(dFilterClause));
-	    
-	    //이벤트 보고서-----------------
-	    Metric totalEvents = new Metric()
-		        .setExpression("ga:totalEvents")
-		        .setAlias("totalEvents");
-	    
-	    //디멘션 설정
-	    Dimension eventCategory = new Dimension().setName("ga:eventCategory");
-	    Dimension eventAction = new Dimension().setName("ga:eventAction");
-	    
-	    //측정 기준 필터 적용~
-	    DimensionFilter actionFilter = new DimensionFilter()
-	    		.setDimensionName("ga:eventAction") // {{eventAction}} 에
-	    		.setExpressions(Arrays.asList(resultSeq));
-	    
-	    DimensionFilterClause actionFilterClause = new DimensionFilterClause()
-	    		.setFilters(Arrays.asList(actionFilter));
-	   
-
-	    // 위의 항목과 기준을 구글로 Request 하기 위한 객체를 만든다
-	    ReportRequest eventRequest = new ReportRequest()
-	        .setViewId(VIEW_ID)
-	        .setDateRanges(Arrays.asList(dateRange))
-	        .setMetrics(Arrays.asList(totalEvents))
-	        .setDimensions(Arrays.asList(eventCategory, eventAction))
-	        .setDimensionFilterClauses(Arrays.asList(actionFilterClause));
-	    
-	    
-	    //리스트에 모두 싣습니다~
-	    ArrayList<ReportRequest> requests = new ArrayList<ReportRequest>();
-	    requests.add(request);
-	    requests.add(eventRequest);
-	    
-	    // 아마 Request 한 것에 대한 결과를 Receive 하는 객체를 만드는 듯 하다
-	    GetReportsRequest getReport = new GetReportsRequest()
-	        .setReportRequests(requests);
-
-	    // 상기의 리스트를 GA 서버로 Request 하여 결과 값을 Response 하는 메소드(Execute)
-	    GetReportsResponse response = service.reports().batchGet(getReport).execute();
-
-	    // 결과를 반환
-	    return response;
-	  }
+	
 	
 private ArrayList<PageViewVO> getPageViewinRange(AnalyticsReporting service, String seq, String startDate, String endDate) throws IOException {
 		
@@ -640,8 +631,11 @@ private ArrayList<PageViewVO> getPageViewinRange(AnalyticsReporting service, Str
 		for(InformVO new_vo : new_list) {
 			int idx = new_list.indexOf(new_vo);
 			
-			new_vo.setBounceRate(Double.parseDouble(format.format(new_vo.getBounces() / (double)new_vo.getSessions() * 100)));
-			new_vo.setEventRate(Double.parseDouble(format.format(new_vo.getTotalEvents() / (double)new_vo.getPageviews() * 100)));		
+			new_vo.setBounceRate(new_vo.getBounces() / (double)new_vo.getSessions() * 100);
+			new_vo.setEventRate(new_vo.getTotalEvents() / (double)new_vo.getPageviews() * 100);		
+			
+			//new_vo.setBounceRate(Double.parseDouble(format.format(new_vo.getBounces() / (double)new_vo.getSessions() * 100)));
+			//new_vo.setEventRate(Double.parseDouble(format.format(new_vo.getTotalEvents() / (double)new_vo.getPageviews() * 100)));		
 			
 			new_list.set(idx, new_vo);			
 		}
