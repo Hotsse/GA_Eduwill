@@ -1,25 +1,40 @@
 package ga.common;
 
 public class InformVO {
-	private String pagePath;
+	private String pageCode;
 	private int pageviews;
 	private int uniquePageviews;
 	private int sessions;
 	private double exitRate;
+	private int bounces;
 	private double bounceRate;
 	private int totalEvents;
+	private double eventRate;
 	
+	
+	public double getEventRate() {
+		return eventRate;
+	}
+	public void setEventRate(double eventRate) {
+		this.eventRate = eventRate;
+	}
+	public int getBounces() {
+		return bounces;
+	}
+	public void setBounces(int bounces) {
+		this.bounces = bounces;
+	}
 	public double getBounceRate() {
 		return bounceRate;
 	}
 	public void setBounceRate(double bounceRate) {
 		this.bounceRate = bounceRate;
 	}
-	public String getPagePath() {
-		return pagePath;
+	public String getPageCode() {
+		return pageCode;
 	}
-	public void setPagePath(String pagePath) {
-		this.pagePath = pagePath;
+	public void setPageCode(String pageCode) {
+		this.pageCode = pageCode;
 	}
 	public int getPageviews() {
 		return pageviews;

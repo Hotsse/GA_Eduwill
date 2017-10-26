@@ -7,5 +7,12 @@
 	select idx, name, code from tbl_merchandise where idx > 0
 	]]>
 	</select>
+	
+	<insert id="updateDailyData">
+	insert into tbl_information (uDate, pagePath, pageviews, uniquePageviews, sessions, exitRate, bounceRate, totalEvents)
+	 values (#{uDate}, #{pagePath}, #{pageviews}, #{uniquePageviews}, #{sessions}, #{exitRate}, #{bounceRate}, #{totalEvents})
+	</insert>
+	
+	
 
 </mapper>

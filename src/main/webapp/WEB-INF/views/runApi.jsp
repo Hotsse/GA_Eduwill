@@ -79,7 +79,7 @@
 						<table class="table table-hover">
 							<thead>
 								<tr>
-									<th>URL</th>
+									<th>상품코드</th>
 									<th>페이지뷰</th>
 									<th>순 페이지뷰</th>
 									<th>세션 수</th>
@@ -91,23 +91,13 @@
 							<tbody>
 								<c:forEach var="inform" items="${result}" varStatus="status">
 									<tr>
-										<td>${inform.pagePath}</td>
+										<td>${inform.pageCode}</td>
 										<td>${inform.pageviews}</td>
 										<td>${inform.uniquePageviews}</td>
 										<td>${inform.sessions}</td>
-										<td>
-											<script>
-							    			var num = ${inform.bounceRate};
-							    			document.write(num.toFixed(3));
-							    			</script>
-				    					</td>
+										<td>${inform.bounceRate}</td>
 										<td>${inform.totalEvents}</td>
-										<td>
-											<script>
-							    			var num2 = ${inform.totalEvents*1.0 / inform.pageviews*1.0 * 100.0};
-							    			document.write(num2.toFixed(3));
-					    					</script>
-					    				</td>
+										<td>${inform.eventRate }</td>
 									</tr>
 								</c:forEach>
 							</tbody>

@@ -55,4 +55,13 @@ public class GaApiController {
 		return "runApi";
 	}
 	
+	//update daily analytics data
+	@RequestMapping("/update_analytics")
+	public String update(@RequestParam Map<String, Object> param, ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+		
+		gaApiService.updateDailyData(param, model, request, response);
+		
+		return "home";
+	}
+	
 }

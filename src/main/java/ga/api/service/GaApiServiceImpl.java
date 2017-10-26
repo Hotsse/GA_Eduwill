@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
+import ga.api.dao.MercDAO;
 import ga.common.GaApiRunner;
 import ga.common.InformVO;
 import ga.common.PageViewVO;
@@ -20,6 +21,10 @@ public class GaApiServiceImpl implements GaApiService {
 	
 	@Autowired
 	private GaApiRunner gaApiRunner;
+	
+	//Inject "Merchandise Data Access Object" to access MyBatis mapper(=query) to process SQL Query for tbl_merchandise;
+	@Autowired
+	private MercDAO dao;
 	
 	@Override
 	public void runApi(Map<String, Object> param, ModelMap model, HttpServletRequest request, HttpServletResponse response){
@@ -52,5 +57,13 @@ public class GaApiServiceImpl implements GaApiService {
 		model.addAttribute("pageViews", list);
 		
 		return ;
+	}
+	
+	@Override
+	public void updateDailyData(Map<String, Object> param, ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception{
+		
+		ArrayList<InformVO> list = gaApiRunner.getDailyData();
+		
+		dao.updateDailyData(list);
 	}
 }

@@ -31,7 +31,7 @@
 				<li class="active"><a href="#">상품페이지</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
-				<li><a href="#"><span class="glyphicon glyphicon-log-in"></span>로그인</a></li>
+				<li><a href="/update_analytics">GA 정보 다운로드</li>
 			</ul>
 		</div>
 	</div>

@@ -12,4 +12,5 @@ public interface GaApiService {
 
 	public void runApi(Map<String, Object> param, ModelMap model, HttpServletRequest request, HttpServletResponse response);
 	
+	public void updateDailyData(Map<String, Object> param, ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception;
 }

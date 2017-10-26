@@ -1,5 +1,8 @@
 package net.eduwill.intern;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -22,7 +25,26 @@ public class MercDAOTest {
       @Test
       public void test() throws Exception{
     	  
+    	  DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    	  Date date = new Date();
+    	  System.out.println(dateFormat.format(date));
     	  
+    	  String url = "https://www.eduwill.net/Common/Product/goods/auto/index.asp?masterSeq=NDcw";
+    	  String code = null;
+    	  
+    	  String []arr = url.split("\\?");
+    	  if(arr.length > 1) {
+    		  String tmp = arr[1];
+    		  arr = tmp.split("=");
+    		  if(arr.length > 1) {
+    			  code = arr[1];
+    		  }
+    	  }
+    	  
+    	  if(code == null)System.out.println("null");
+    	  else System.out.println(code);
+    	  
+    	  /*
     	  List<MercVO> list = dao.listAll();
     	  
     	  for(MercVO vo : list) {
@@ -31,6 +53,22 @@ public class MercDAOTest {
               System.out.println("name : " + vo.getName());
               System.out.println("code : " + vo.getCode());
     	  }
+    	  */
     	  
+      }
+      
+      private String parseCodeInURL(String url) {
+    	  String code = null;
+    	  
+    	  String []arr = url.split("\\?");
+    	  if(arr.length > 1) {
+    		  String tmp = arr[1];
+    		  arr = tmp.split("=");
+    		  if(arr.length > 1) {
+    			  code = arr[1];
+    		  }
+    	  }
+    	  
+    	  return code;
       }
 }
