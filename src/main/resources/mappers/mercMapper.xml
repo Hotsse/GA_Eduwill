@@ -4,15 +4,36 @@
 
 	<select id="listAll" resultType="MercVO">
 	<![CDATA[
-	select idx, name, code from tbl_merchandise where idx > 0
+	select MASTER_SEQ as idx, MASTER_TITLE as name, PAGE_URL as code from tbl_goods_master where PAGE_URL like '%NDcw%' OR PAGE_URL like '%NTk4%'
 	]]>
 	</select>
 	
-	<insert id="updateDailyData">
-	insert into tbl_information (uDate, pageCode, pageviews, uniquePageviews, sessions, exitRate, bounceRate, totalEvents, eventRate)
-	 values (#{uDate}, #{pageCode}, #{pageviews}, #{uniquePageviews}, #{sessions}, #{exitRate}, #{bounceRate}, #{totalEvents}, #{eventRate})
+	<insert id="insertDailyData">
+	insert into tbl_information (uDate, pageCode, pagePath, pageviews, uniquePageviews, sessions, bounces, totalEvents)
+	 values (#{uDate}, #{pageCode}, #{pagePath}, #{pageviews}, #{uniquePageviews}, #{sessions}, #{bounces}, #{totalEvents})
 	</insert>
 	
+	<delete id="deleteDailyData">
+	delete from tbl_information where uDate = #{uDate} AND pagePath = #{pagePath}
+	</delete>
 	
+	<select id="getSearchData" resultType="InformVO" parameterType="Map">
+	<![CDATA[
+	select pageCode, sum(pageviews) as pageviews, sum(uniquePageviews) as uniquePageviews, sum(sessions) as sessions, sum(bounces) as bounces, sum(totalEvents) as totalEvents 
+	from tbl_information 
+	where pageCode = #{seq} AND uDate >= #{startDate} AND uDate <= #{endDate} 
+	group by pageCode
+	]]>
+	</select>
+	
+	<select id="getDailyPageviews" resultType="PageViewVO" parameterType="Map">
+	<![CDATA[
+	select uDate as mDate, sum(pageviews) as mPageView from tbl_information 
+	where pageCode = #{seq} 
+	AND uDate >= #{startDate} 
+	AND uDate <= #{endDate}
+	group by pageCode, uDate
+	]]>
+	</select>
 
 </mapper>

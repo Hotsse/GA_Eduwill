@@ -1,5 +1,6 @@
 package ga.api.service;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
 import ga.api.dao.MercDAO;
+import ga.api.domain.DailyInformVO;
 import ga.api.domain.MercVO;
 import ga.common.GaApiRunner;
 import ga.common.InformVO;
@@ -41,42 +43,82 @@ public class GaApiServiceImpl implements GaApiService {
 		System.out.println("endDate		: " + endDate);
 		System.out.println("==========================================");
 		
-		model.addAttribute("seq", seq);
-		model.addAttribute("result", gaApiRunner.print(seq, startDate, endDate));
+		List<InformVO> resultList = dao.getSearchData(seq, startDate, endDate);
+		List<PageViewVO> pageviewList = dao.getDailyPageviews(seq, startDate, endDate);
 		
-		ArrayList<PageViewVO> list = gaApiRunner.getPageViewsforDay(seq, startDate, endDate);
-		
-		if(list != null) {
-			System.out.println("일별 페이지뷰 조회 통계 결과");
-			for(PageViewVO vo : list) {
-				System.out.println("=================================");
-				System.out.println("Date : " + vo.getmDate());
-				System.out.println("PageView : " + vo.getmPageView());
-				System.out.println("=================================");
+		if(resultList.isEmpty())resultList = null;
+		else {
+			//calculate bounceRate, eventRate
+			DecimalFormat format = new DecimalFormat(".###"); // 소숫점 3자리 까지 제한
+			
+			for(InformVO vo : resultList) {			
+				vo.setBounceRate(Double.parseDouble(format.format(vo.getBounces() / (double)vo.getSessions() * 100)));
+				vo.setEventRate(Double.parseDouble(format.format(vo.getTotalEvents() / (double)vo.getPageviews() * 100)));
 			}
 		}
 		
-		model.addAttribute("pageViews", list);
+		if(pageviewList.isEmpty())pageviewList = null;
 		
-		return ;
+		model.addAttribute("seq", seq);
+		model.addAttribute("result", resultList);
+		model.addAttribute("pageViews", pageviewList);
 	}
 	
 	@Override
 	public void updateDailyData(Map<String, Object> param, ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception{
 		
-		List<MercVO> code = dao.listAll();
-		ArrayList<InformVO> list = gaApiRunner.getDailyData(code);
+		List<MercVO> codeList = replacePathToCode(dao.listAll());
+		ArrayList<DailyInformVO> list = gaApiRunner.getDailyData(codeList);
 		
 		if(list != null) {
 			System.out.println("getDailyData Backup 결과");
-			for(InformVO vo : list) {
+			for(DailyInformVO vo : list) {
 				System.out.println("=================================");
+				System.out.println("pagePath : " + vo.getPagePath());
+				System.out.println("uDate : " + vo.getuDate());
 				System.out.println("pageCode : " + vo.getPageCode());
 				System.out.println("pageviews : " + vo.getPageviews());
+				System.out.println("bounces : " + vo.getBounces());
 				System.out.println("=================================");
 			}
 		}
 		
 		dao.updateDailyData(list);
+	}
+	
+	private List<MercVO> replacePathToCode(List<MercVO> oldList) {
+
+		List<MercVO> newList = new ArrayList<MercVO>();
+		
+		for(MercVO vo : oldList) {
+			String tmpCode = parseCodeInURL(vo.getCode());
+			vo.setCode(tmpCode);
+			newList.add(vo);
+		}
+		
+		return newList;
+	}
+	
+	private String parseCodeInURL(String url) {
+		  String code = null;
+		  
+		  String []arr = url.split("\\?");
+		  if(arr.length > 1) {
+			  String tmp = arr[1];
+			  arr = tmp.split("&");
+			  
+			  int idx=0;
+			  if(arr.length > 1) {
+				  for(idx=0; idx < arr.length; idx++) {
+					  if(arr[idx].contains("masterSeq"))break;
+				  }
+			  }
+			  tmp = arr[idx];
+			  arr = tmp.split("=");
+			  code = arr[1];
+			  while(code.length()%4 != 0)code = code.concat("=");
+		  }
+		  
+		  return code;
 	}
 }

@@ -5,7 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Repository;
 import ga.api.domain.DailyInformVO;
 import ga.api.domain.MercVO;
 import ga.common.InformVO;
+import ga.common.PageViewVO;
 
 //Implementing MercDAO
 @Repository
@@ -33,20 +36,38 @@ public class MercDAOImpl implements MercDAO {
 	}
 	
 	@Override
-	public void updateDailyData(ArrayList<InformVO> list) throws Exception{
+	public void updateDailyData(ArrayList<DailyInformVO> list) throws Exception{
 		
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		
-		final Calendar cal = Calendar.getInstance();
-	    cal.add(Calendar.DATE, -1);
-		String yesterday = dateFormat.format(cal.getTime());
-		
-		for(InformVO vo : list) {
-			DailyInformVO dvo = new DailyInformVO();
-			dvo.setInformVO(vo);
-			dvo.setuDate(yesterday);
-			session.insert(namespace+".updateDailyData", dvo);
+		//중복 데이터 삭제
+		for(DailyInformVO vo : list) {
+			session.delete(namespace+".deleteDailyData", vo);
 		}
+		//새 데이터 생성
+		for(DailyInformVO vo : list) {
+			session.insert(namespace+".insertDailyData", vo);
+		}
+	}
+	
+	@Override
+	public List<InformVO> getSearchData(String seq, String startDate, String endDate){
+		Map<String, Object> sqlParam = new HashMap<>();
+		
+		sqlParam.put("seq",  seq);
+		sqlParam.put("startDate", startDate);
+		sqlParam.put("endDate", endDate);
+		
+		return session.selectList(namespace+".getSearchData", sqlParam);
+	}
+	
+	@Override
+	public List<PageViewVO> getDailyPageviews(String seq, String startDate, String endDate){
+		Map<String, Object> sqlParam = new HashMap<>();
+		
+		sqlParam.put("seq",  seq);
+		sqlParam.put("startDate", startDate);
+		sqlParam.put("endDate", endDate);
+		
+		return session.selectList(namespace+".getDailyPageviews", sqlParam);
 	}
 
 }

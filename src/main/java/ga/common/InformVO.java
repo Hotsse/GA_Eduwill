@@ -2,6 +2,7 @@ package ga.common;
 
 public class InformVO {
 	private String pageCode;
+	private String pagePath;
 	private int pageviews;
 	private int uniquePageviews;
 	private int sessions;
@@ -11,7 +12,12 @@ public class InformVO {
 	private int totalEvents;
 	private double eventRate;
 	
-	
+	public String getPagePath() {
+		return pagePath;
+	}
+	public void setPagePath(String pagePath) {
+		this.pagePath = pagePath;
+	}
 	public double getEventRate() {
 		return eventRate;
 	}

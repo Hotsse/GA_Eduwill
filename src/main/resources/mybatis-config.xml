@@ -4,6 +4,7 @@
 
 	<typeAliases>
 		<package name="ga.api.domain"/>
+		<package name="ga.common"/>
 	</typeAliases>
 
 </configuration>

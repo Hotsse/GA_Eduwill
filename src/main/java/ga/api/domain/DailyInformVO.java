@@ -15,10 +15,12 @@ public class DailyInformVO extends InformVO {
 	
 	public void setInformVO(InformVO vo) {
 		setPageCode(vo.getPageCode());
+		setPagePath(vo.getPagePath());
 		setPageviews(vo.getPageviews());
 		setUniquePageviews(vo.getUniquePageviews());
 		setSessions(vo.getSessions());
 		setExitRate(vo.getExitRate());
+		setBounces(vo.getBounces());
 		setBounceRate(vo.getBounceRate());
 		setTotalEvents(vo.getTotalEvents());
 	}
