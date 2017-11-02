@@ -22,7 +22,6 @@
 		<beans:property name="suffix" value=".jsp" />
 	</beans:bean>
 	
-	<context:component-scan base-package="ga.common" />
-	<context:component-scan base-package="ga.api" />
+	<context:component-scan base-package="ga" />
 	
 </beans:beans>

@@ -13,11 +13,9 @@
 	
 	<context:annotation-config />
 	
-	<!-- Root Context: defines shared resources visible to all other web components -->
-	<bean id="gaApiRunner" class="ga.common.GaApiRunner" />		
-	<bean id="gaApiService" class="ga.api.service.GaApiServiceImpl" />
-	<bean id="gaApiController" class="ga.api.controller.GaApiController" />	
+	<context:component-scan base-package="ga" />
 	
+	<!-- Root Context: defines shared resources visible to all other web components -->	
 	
 	<!-- MyBatis -->
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
@@ -36,10 +34,5 @@
 	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate" destroy-method="clearCache">
       <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory" /> <!-- SqlSessionFactory 의 생성자 의존주입 -->
 	</bean>
-	
-	<bean id="mercVO" class="ga.api.domain.MercVO" />
-	<bean id="mercService" class="ga.api.service.MercServiceImpl" />
-	
-	<context:component-scan base-package="ga.api.dao" />
 	 
 </beans>

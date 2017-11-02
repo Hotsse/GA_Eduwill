@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
@@ -18,8 +19,9 @@ import ga.api.domain.DailyInformVO;
 import ga.api.domain.MercVO;
 import ga.common.GaApiRunner;
 import ga.common.InformVO;
-import ga.common.PageViewVO;
+import ga.common.DailyVO;
 
+//Implementating GaApiService
 @Service
 public class GaApiServiceImpl implements GaApiService {
 	
@@ -44,46 +46,34 @@ public class GaApiServiceImpl implements GaApiService {
 		System.out.println("==========================================");
 		
 		List<InformVO> resultList = dao.getSearchData(seq, startDate, endDate);
-		List<PageViewVO> pageviewList = dao.getDailyPageviews(seq, startDate, endDate);
+		List<DailyVO> dailyDataList = dao.getDailyData(seq, startDate, endDate);
 		
 		if(resultList.isEmpty())resultList = null;
 		else {
 			//calculate bounceRate, eventRate
 			DecimalFormat format = new DecimalFormat(".###"); // 소숫점 3자리 까지 제한
 			
-			for(InformVO vo : resultList) {			
+			for(InformVO vo : resultList) {
 				vo.setBounceRate(Double.parseDouble(format.format(vo.getBounces() / (double)vo.getSessions() * 100)));
 				vo.setEventRate(Double.parseDouble(format.format(vo.getTotalEvents() / (double)vo.getPageviews() * 100)));
 			}
 		}
 		
-		if(pageviewList.isEmpty())pageviewList = null;
+		if(dailyDataList.isEmpty())dailyDataList = null;
 		
 		model.addAttribute("seq", seq);
 		model.addAttribute("result", resultList);
-		model.addAttribute("pageViews", pageviewList);
+		model.addAttribute("dailyDataList", dailyDataList);
 	}
 	
 	@Override
 	public void updateDailyData(Map<String, Object> param, ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception{
 		
+		String startDate = (String) param.get("startDate");
+		String endDate = (String) param.get("endDate");
+		
 		List<MercVO> codeList = replacePathToCode(dao.listAll());
-		ArrayList<DailyInformVO> list = gaApiRunner.getDailyData(codeList);
-		
-		if(list != null) {
-			System.out.println("getDailyData Backup 결과");
-			for(DailyInformVO vo : list) {
-				System.out.println("=================================");
-				System.out.println("pagePath : " + vo.getPagePath());
-				System.out.println("uDate : " + vo.getuDate());
-				System.out.println("pageCode : " + vo.getPageCode());
-				System.out.println("pageviews : " + vo.getPageviews());
-				System.out.println("bounces : " + vo.getBounces());
-				System.out.println("=================================");
-			}
-		}
-		
-		dao.updateDailyData(list);
+		dao.updateDailyData(gaApiRunner.getDailyData(codeList, startDate, endDate));
 	}
 	
 	private List<MercVO> replacePathToCode(List<MercVO> oldList) {

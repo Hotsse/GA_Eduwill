@@ -18,6 +18,7 @@ import java.util.Properties;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Component;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -45,16 +46,16 @@ import com.google.api.services.analyticsreporting.v4.model.SegmentFilterClause;
 import ga.api.domain.DailyInformVO;
 import ga.api.domain.MercVO;
 
+@Component
 public class GaApiRunner {
 	
 	//Authorization Information for Google Analytics
 	private final String APPLICATION_NAME = "Eduwill_Internship_GA_Project";
 	private final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance(); // GsonFactory.getDefaultInstance()
 	private final String KEY_FILE_LOCATION = "client_secrets_edw.json"; // /resources/secret_key 에 들어가는 인증 정보
-	
 	private final String VIEW_ID = "66471933"; // View ID 는 ga-dev-tools.appsport.com/account-explorer/
 	
-	public ArrayList<DailyInformVO> getDailyData(List<MercVO> code) {
+	public ArrayList<DailyInformVO> getDailyData(List<MercVO> code, String startDate, String endDate) {
 		ArrayList<DailyInformVO> result = new ArrayList<DailyInformVO>();
 		
 		for(MercVO vo : code) {
@@ -64,7 +65,7 @@ public class GaApiRunner {
 				AnalyticsReporting service = initializeAnalyticsReporting();
 					
 				//쿼리를 실행 시켜서
-				GetReportsResponse response = getDailyReport(service, vo.getCode());
+				GetReportsResponse response = getDailyReport(service, vo.getCode(), startDate, endDate);
 				
 				//결과값을 파싱하여 뿌린다
 				tmp = printDailyResponse(response);
@@ -112,12 +113,15 @@ public class GaApiRunner {
 	   * @return GetReportResponse The Analytics Reporting API V4 response.
 	   * @throws IOException
 	*/
-	private GetReportsResponse getDailyReport(AnalyticsReporting service, String seq) throws IOException {
+	private GetReportsResponse getDailyReport(AnalyticsReporting service, String seq, String startDate, String endDate) throws IOException {
 
 		// 조사할 기간의 범위를 설정한다
 		DateRange dateRange = new DateRange();
-		dateRange.setStartDate("yesterday");
-		dateRange.setEndDate("yesterday");
+		if(startDate != null)dateRange.setStartDate(startDate);
+		else dateRange.setStartDate("yesterday");
+		if(endDate != null)dateRange.setEndDate(endDate);
+		else dateRange.setEndDate("yesterday");
+		
 
 		/*
 		 * 측정 항목과 측정기준의 객체를 만들고 내용물을 설정한다 내용물에 대한 쿼리 레퍼런스는 아래의 링크를 참고하자
@@ -131,7 +135,7 @@ public class GaApiRunner {
 
 		Metric sessions = new Metric().setExpression("ga:sessions").setAlias("sessions");
 
-		Metric exitRate = new Metric().setExpression("ga:exitRate").setAlias("exitRate");
+		Metric entrances = new Metric().setExpression("ga:entrances").setAlias("entrances");
 
 		Metric bounces = new Metric().setExpression("ga:bounces").setAlias("bounces");
 
@@ -150,7 +154,7 @@ public class GaApiRunner {
 
 		// 위의 항목과 기준을 구글로 Request 하기 위한 객체를 만든다
 		ReportRequest request = new ReportRequest().setViewId(VIEW_ID).setDateRanges(Arrays.asList(dateRange))
-				.setMetrics(Arrays.asList(pageviews, uniqueviews, sessions, exitRate, bounces))
+				.setMetrics(Arrays.asList(pageviews, uniqueviews, sessions, entrances, bounces))
 				.setDimensions(Arrays.asList(pageTitle, date)).setDimensionFilterClauses(Arrays.asList(dFilterClause));
 
 		// 이벤트 보고서-----------------
@@ -253,8 +257,8 @@ public class GaApiRunner {
 								entity.setUniquePageviews(Integer.parseInt(values.getValues().get(k)));
 							else if(metricHeaders.get(k).getName().equals("sessions"))
 								entity.setSessions(Integer.parseInt(values.getValues().get(k)));
-							else if(metricHeaders.get(k).getName().equals("exitRate"))
-								entity.setExitRate(Double.parseDouble(values.getValues().get(k)));
+							else if(metricHeaders.get(k).getName().equals("entrances"))
+								entity.setEntrances(Integer.parseInt(values.getValues().get(k)));
 							else if(metricHeaders.get(k).getName().equals("bounces"))
 								entity.setBounces(Integer.parseInt(values.getValues().get(k)));
 						}
@@ -298,8 +302,8 @@ public class GaApiRunner {
 					
 					if(entity.getEventCategory().contains("수강신청_클릭")) {
 						for(DailyInformVO en : list) {
-							if(en.getPageCode() == null)break;
-							if(entity.getEventAction().contains(en.getPageCode())) {
+							if(en.getPagePath() == null)continue;
+							if(entity.getEventAction().contains(en.getPagePath())) {
 								int entry = list.indexOf(en);							
 								en.setTotalEvents(entity.getTotalEvents());
 								list.set(entry, en);

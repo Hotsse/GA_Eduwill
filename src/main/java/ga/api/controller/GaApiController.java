@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -26,6 +27,7 @@ import ga.common.GaApiRunner;
 /**
  * Handles requests for the application home page.
  */
+
 @Controller
 public class GaApiController {
 	
@@ -56,10 +58,10 @@ public class GaApiController {
 	}
 	
 	//update daily analytics data
-	@RequestMapping("/update_analytics")
+	@RequestMapping(value = "/update_analytics", method = RequestMethod.POST)
 	public String update(@RequestParam Map<String, Object> param, ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
-		gaApiService.updateDailyData(param, model, request, response);
+		gaApiService.updateDailyData(param, model, request, response); // call service;
 		
 		return "redirect:/";
 	}

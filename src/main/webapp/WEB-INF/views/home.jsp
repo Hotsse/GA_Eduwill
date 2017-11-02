@@ -16,7 +16,42 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
-	
+
+	<!-- The Modal -->
+	<div class="modal fade" id="myModal">
+		<div class="modal-dialog-lg">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title">GA 정보 다운로드</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body">
+					<h3 class="page-header">
+						기간 선택<small> 시작일 / 종료일</small>
+					</h3>
+					<form action="/update_analytics" method="post">
+						<input type="hidden" name="seq" value=${seq } />
+						<div class="col-sm-5 text-left">
+							시작일 : <input type="date" class="form-control" name="startDate" value=${param.startDate }>
+						</div>
+						<div class="col-sm-5 text-left">
+							종료일 : <input type="date" class="form-control" name="endDate" value=${param.endDate }>
+						</div>
+						<div class="col-sm-2 text-center">
+							<br /> <input type="submit" class="btn btn-primary btn-block" value="백업" />
+						</div>
+					</form>
+					<br/><br/>해당 기간 내의 GA 정보를 DB로 백업합니다.<br/>(기본값은 어제입니다)
+				</div>
+
+			</div>
+		</div>
+	</div>
+
 	<!-- top nav -->
 	<nav class="navbar navbar-inverse">
 	<div class="container-fluid">
@@ -29,7 +64,7 @@
 		<div class="collapse navbar-collapse" id="myNavbar">
 			<ul class="nav navbar-nav">
 				<li class="active"><a href="#">상품페이지</a></li>
-				<li><a href="/update_analytics">GA 정보 다운로드</a></li>
+				<li><a href="#" data-toggle="modal" data-target="#myModal">GA 정보 다운로드</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
 				<li><a href="#">로그인</li>
@@ -47,7 +82,6 @@
 				<div class="list-group">
 					<span class="list-group-item"><strong>문제</strong></span>
 					<a href="#" class="list-group-item active">상품 목록</a>
-					<a href="#" class="list-group-item">테스트_아이템_1</a>
 				</div>
 			</div>
 			

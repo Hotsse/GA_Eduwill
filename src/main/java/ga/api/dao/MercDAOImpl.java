@@ -12,12 +12,13 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.apache.ibatis.session.SqlSession;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import ga.api.domain.DailyInformVO;
 import ga.api.domain.MercVO;
 import ga.common.InformVO;
-import ga.common.PageViewVO;
+import ga.common.DailyVO;
 
 //Implementing MercDAO
 @Repository
@@ -60,14 +61,14 @@ public class MercDAOImpl implements MercDAO {
 	}
 	
 	@Override
-	public List<PageViewVO> getDailyPageviews(String seq, String startDate, String endDate){
+	public List<DailyVO> getDailyData(String seq, String startDate, String endDate){
 		Map<String, Object> sqlParam = new HashMap<>();
 		
 		sqlParam.put("seq",  seq);
 		sqlParam.put("startDate", startDate);
 		sqlParam.put("endDate", endDate);
 		
-		return session.selectList(namespace+".getDailyPageviews", sqlParam);
+		return session.selectList(namespace+".getDailyData", sqlParam);
 	}
 
 }

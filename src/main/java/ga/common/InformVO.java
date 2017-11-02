@@ -6,7 +6,7 @@ public class InformVO {
 	private int pageviews;
 	private int uniquePageviews;
 	private int sessions;
-	private double exitRate;
+	private int entrances;
 	private int bounces;
 	private double bounceRate;
 	private int totalEvents;
@@ -60,11 +60,11 @@ public class InformVO {
 	public void setSessions(int sessions) {
 		this.sessions = sessions;
 	}
-	public double getExitRate() {
-		return exitRate;
+	public int getEntrances() {
+		return entrances;
 	}
-	public void setExitRate(double exitRate) {
-		this.exitRate = exitRate;
+	public void setEntrances(int entrances) {
+		this.entrances = entrances;
 	}
 	public int getTotalEvents() {
 		return totalEvents;
