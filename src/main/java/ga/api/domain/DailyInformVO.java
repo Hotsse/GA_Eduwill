@@ -19,7 +19,7 @@ public class DailyInformVO extends InformVO {
 		setPageviews(vo.getPageviews());
 		setUniquePageviews(vo.getUniquePageviews());
 		setSessions(vo.getSessions());
-		setExitRate(vo.getExitRate());
+		setEntrances(vo.getEntrances());
 		setBounces(vo.getBounces());
 		setBounceRate(vo.getBounceRate());
 		setTotalEvents(vo.getTotalEvents());
