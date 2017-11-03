@@ -2,6 +2,7 @@ package ga.api.controller;
 
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -57,11 +58,36 @@ public class GaApiController {
 		return "runApi";
 	}
 	
+	
+	@RequestMapping(value = "/analytics/excel")
+	public String excel() {
+		
+		return "excel";
+	}
+	
 	//update daily analytics data
-	@RequestMapping(value = "/update_analytics", method = RequestMethod.POST)
-	public String update(@RequestParam Map<String, Object> param, ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+	@RequestMapping(value = "/updateDailyData", method = RequestMethod.POST)
+	public String updateDailyData(@RequestParam Map<String, Object> param, ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
 		gaApiService.updateDailyData(param, model, request, response); // call service;
+		
+		return "redirect:/";
+	}
+	
+	//update oneday analytics data
+	@RequestMapping(value = "/updateOnedayData", method = RequestMethod.POST)
+	public String updateOnedayData(@RequestParam Map<String, Object> param, ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+		
+		gaApiService.updateOnedayData(param, model, request, response); // call service;
+		
+		return "redirect:/";
+	}
+	
+	//update yesterday analytics data
+	@RequestMapping(value = "/updateYesterdayData", method = RequestMethod.GET)
+	public String updateYesterData(@RequestParam Map<String, Object> param, ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+		
+		gaApiService.updateYesterdayData(param, model, request, response); // call service;
 		
 		return "redirect:/";
 	}

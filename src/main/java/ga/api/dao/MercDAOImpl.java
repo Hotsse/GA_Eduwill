@@ -45,6 +45,7 @@ public class MercDAOImpl implements MercDAO {
 		}
 		//새 데이터 생성
 		for(DailyInformVO vo : list) {
+			//if(vo.getPagePath().length() >= 100)vo.setPagePath(vo.getPagePath().substring(0,100));
 			session.insert(namespace+".insertDailyData", vo);
 		}
 	}

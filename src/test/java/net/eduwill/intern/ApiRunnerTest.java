@@ -1,24 +1,17 @@
-package ga.common;
+package net.eduwill.intern;
 
-import java.io.File;
+import static org.junit.Assert.*;
+
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URL;
 import java.security.GeneralSecurityException;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
 
+import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Component;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -40,82 +33,49 @@ import com.google.api.services.analyticsreporting.v4.model.MetricHeaderEntry;
 import com.google.api.services.analyticsreporting.v4.model.Report;
 import com.google.api.services.analyticsreporting.v4.model.ReportRequest;
 import com.google.api.services.analyticsreporting.v4.model.ReportRow;
-import com.google.api.services.analyticsreporting.v4.model.SegmentDimensionFilter;
-import com.google.api.services.analyticsreporting.v4.model.SegmentFilterClause;
 
 import ga.api.domain.DailyInformVO;
 import ga.api.domain.MercVO;
+import ga.common.EventVO;
 
-@Component
-public class GaApiRunner {
+public class ApiRunnerTest {
 	
 	//Authorization Information for Google Analytics
 	private final String APPLICATION_NAME = "Eduwill_Internship_GA_Project";
 	private final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance(); // GsonFactory.getDefaultInstance()
 	private final String KEY_FILE_LOCATION = "client_secrets_edw.json"; // /resources/secret_key 에 들어가는 인증 정보
 	private final String VIEW_ID = "66471933"; // View ID 는 ga-dev-tools.appsport.com/account-explorer/
-	
-	public ArrayList<DailyInformVO> getDailyData(List<MercVO> code, String startDate, String endDate) {
+
+	@Test
+	public void getDailyData() {
 		ArrayList<DailyInformVO> result = new ArrayList<DailyInformVO>();
 		
-		for(MercVO vo : code) {
-			ArrayList<DailyInformVO> tmp = null;
-			try {
-				//서비스를 초기화 시키고
-				AnalyticsReporting service = initializeAnalyticsReporting();
-					
-				//쿼리를 실행 시켜서
-				GetReportsResponse response = getDailyReport(service, vo.getCode(), startDate, endDate);
+		String startDate = "2017-10-28";
+		String endDate = "2017-10-31";
+	
+		try {
+			//서비스를 초기화 시키고
+			AnalyticsReporting service = initializeAnalyticsReporting();
 				
-				//결과값을 파싱하여 뿌린다
-				tmp = printDailyResponse(response);
-				
-				if(tmp != null && !tmp.isEmpty()) {
-					for(DailyInformVO dvo : tmp) result.add(dvo);
-				}
+			//쿼리를 실행 시켜서
+			GetReportsResponse response = getDailyReport(service, startDate, endDate);
+			
+			//결과값을 파싱하여 뿌린다
+			result = printDailyResponse(response);
 
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
 		
-		return result;		
-	}
-	
-	public ArrayList<DailyInformVO> getYesterdayData() {
+		int sumpv = 0;
+		for(DailyInformVO vo : result) {
+			if(vo.getPagePath().contains("NDcw")) {
+				System.out.println("pagePath :" + vo.getPagePath());
+				sumpv+=vo.getPageviews();
+			}
+		}
+		System.out.println("SUMPV : " + sumpv);
 		
-		ArrayList<DailyInformVO> result = null;
-		try {
-			
-			AnalyticsReporting service = initializeAnalyticsReporting(); // 1단계 : API 인증 정보 확인 및 서비스 초기화
-			
-			GetReportsResponse response = getDailyReport(service, null, null, null); // 2단계 : 요청 정보 객체를 생성, GA 서버로 전송하여 정보 획득
-			
-			result = printDailyResponse(response); // 3단계 : 정보를 파싱하여 자료를 얻음
-
-		} catch(Exception e) {
-			e.printStackTrace();
-		}		
-		
-		return result;		
-	}
-	
-	public ArrayList<DailyInformVO> getOnedayData(String date) {
-		
-		ArrayList<DailyInformVO> result = null;
-		try {
-
-			AnalyticsReporting service = initializeAnalyticsReporting(); // 1단계 : API 인증 정보 확인 및 서비스 초기화
-			
-			GetReportsResponse response = getDailyReport(service, null, date, date); // 2단계 : 요청 정보 객체를 생성, GA 서버로 전송하여 정보 획득
-			
-			result = printDailyResponse(response); // 3단계 : 정보를 파싱하여 자료를 얻음
-
-		} catch(Exception e) {
-			e.printStackTrace();
-		}		
-		
-		return result;		
 	}
 	
 	/**
@@ -150,7 +110,7 @@ public class GaApiRunner {
 	   * @return GetReportResponse The Analytics Reporting API V4 response.
 	   * @throws IOException
 	*/
-	private GetReportsResponse getDailyReport(AnalyticsReporting service, String seq, String startDate, String endDate) throws IOException {
+	private GetReportsResponse getDailyReport(AnalyticsReporting service, String startDate, String endDate) throws IOException {
 
 		// 조사할 기간의 범위를 설정한다
 		DateRange dateRange = new DateRange();
@@ -178,17 +138,14 @@ public class GaApiRunner {
 
 		// 디멘션 설정
 		Dimension pageTitle = new Dimension().setName("ga:pagePath");
+		Dimension pageLevel1 = new Dimension().setName("ga:pagePathLevel1");
+		Dimension pageLevel2 = new Dimension().setName("ga:pagePathLevel2");
+		Dimension pageLevel3 = new Dimension().setName("ga:pagePathLevel3");
+		Dimension pageLevel4 = new Dimension().setName("ga:pagePathLevel4");
 		Dimension date = new Dimension().setName("ga:date");
 
-		String resultSeq = "masterSeq=";
-		
-		if(seq == null) {
-			System.out.println("URL 필터 적용 : ?masterSeq=");
-		}
-		else {
-			System.out.println("URL 필터 적용 : ?masterSeq=" + seq);
-			resultSeq = resultSeq + seq;
-		}		
+		System.out.println("URL 필터 적용 : ?masterSeq=");
+		String resultSeq = "masterSeq="; // "masterSeq=" 가 포함되어 있어야함
 
 		// 측정 기준 필터 적용~
 		DimensionFilter nameFilter = new DimensionFilter().setDimensionName("ga:pagePath") // {{pagePath}} 에
@@ -199,30 +156,11 @@ public class GaApiRunner {
 		// 위의 항목과 기준을 구글로 Request 하기 위한 객체를 만든다
 		ReportRequest request = new ReportRequest().setViewId(VIEW_ID).setDateRanges(Arrays.asList(dateRange))
 				.setMetrics(Arrays.asList(pageviews, uniqueviews, sessions, entrances, bounces))
-				.setDimensions(Arrays.asList(pageTitle, date)).setDimensionFilterClauses(Arrays.asList(dFilterClause));
-
-		// 이벤트 보고서-----------------
-		Metric totalEvents = new Metric().setExpression("ga:totalEvents").setAlias("totalEvents");
-
-		// 디멘션 설정
-		Dimension eventCategory = new Dimension().setName("ga:eventCategory");
-		Dimension eventAction = new Dimension().setName("ga:eventAction");
-
-		// 측정 기준 필터 적용~
-		DimensionFilter actionFilter = new DimensionFilter().setDimensionName("ga:eventAction") // {{eventAction}} 에
-				.setExpressions(Arrays.asList(resultSeq));
-
-		DimensionFilterClause actionFilterClause = new DimensionFilterClause().setFilters(Arrays.asList(actionFilter));
-
-		// 위의 항목과 기준을 구글로 Request 하기 위한 객체를 만든다
-		ReportRequest eventRequest = new ReportRequest().setViewId(VIEW_ID).setDateRanges(Arrays.asList(dateRange))
-				.setMetrics(Arrays.asList(totalEvents)).setDimensions(Arrays.asList(eventCategory, eventAction))
-				.setDimensionFilterClauses(Arrays.asList(actionFilterClause));
+				.setDimensions(Arrays.asList(pageTitle, date, pageLevel1, pageLevel2, pageLevel3, pageLevel4)).setDimensionFilterClauses(Arrays.asList(dFilterClause));
 
 		// 리스트에 모두 싣습니다~
 		ArrayList<ReportRequest> requests = new ArrayList<ReportRequest>();
 		requests.add(request);
-		requests.add(eventRequest);
 
 		// 아마 Request 한 것에 대한 결과를 Receive 하는 객체를 만드는 듯 하다
 		GetReportsRequest getReport = new GetReportsRequest().setReportRequests(requests);
@@ -265,8 +203,13 @@ public class GaApiRunner {
 					return null;
 				}
 				
-				System.out.println("Success to find for " + VIEW_ID + "(" + rows.size() + ")");
+				System.out.println("Success to find for " + VIEW_ID);
+				
+				int sumpv = 0;
+				
 				for (ReportRow row: rows) {
+					
+					//System.out.println("====================================");
 					
 					DailyInformVO entity = new DailyInformVO();
 					String code = null;
@@ -278,12 +221,15 @@ public class GaApiRunner {
 						if(dimensionHeaders.get(i).equals("ga:pagePath")) {
 							entity.setPagePath(dimensions.get(i));
 							code = parseCodeInURL(dimensions.get(i));
-							if(code != null)entity.setPageCode(code);
+							if(code == null)break;
+							else entity.setPageCode(code);
 						}
 						if(dimensionHeaders.get(i).equals("ga:date")) {
 							entity.setuDate(dimensions.get(i));
 						}
 					}
+					
+					if(code == null)break;
 					
 					for (int j = 0; j < metrics.size(); j++) {
 						DateRangeValues values = metrics.get(j);
@@ -291,8 +237,12 @@ public class GaApiRunner {
 						
 						for (int k = 0; k < values.getValues().size() && k < metricHeaders.size(); k++) {
 							
-							if(metricHeaders.get(k).getName().equals("pageviews"))
+							if(metricHeaders.get(k).getName().equals("pageviews")) {
 								entity.setPageviews(Integer.parseInt(values.getValues().get(k)));
+								System.out.println("pageviews:" + values.getValues().get(k));
+								sumpv+= Integer.parseInt(values.getValues().get(k));
+							}
+								
 							else if(metricHeaders.get(k).getName().equals("uniquePageviews"))
 								entity.setUniquePageviews(Integer.parseInt(values.getValues().get(k)));
 							else if(metricHeaders.get(k).getName().equals("sessions"))
@@ -306,57 +256,11 @@ public class GaApiRunner {
 					
 					list.add(entity);
 				}
+				
+				System.out.println("Sum PV : " + sumpv);
 			}
-			/*
-			else if(cnt == 2) { // Event
-				
-				if (rows == null) {
-					System.out.println("No data found for " + VIEW_ID);
-					break;
-				}
-				
-				System.out.println("Success to find for " + VIEW_ID + "(" + rows.size() + ")");
-				
-				for (ReportRow row: rows) {
-					
-					EventVO entity = new EventVO();
-					
-					List<String> dimensions = row.getDimensions();
-					List<DateRangeValues> metrics = row.getMetrics();
-					
-					String cat = null, act = null;
-					for (int i = 0; i < dimensionHeaders.size() && i < dimensions.size(); i++) {
-						if(dimensionHeaders.get(i).equals("ga:eventCategory"))cat=dimensions.get(i);
-						if(dimensionHeaders.get(i).equals("ga:eventAction"))act=dimensions.get(i);
-					}
-					entity.setEventCategory(cat);
-					entity.setEventAction(act);
-					
-					for (int j = 0; j < metrics.size(); j++) {
-						DateRangeValues values = metrics.get(j);
-						for (int k = 0; k < values.getValues().size() && k < metricHeaders.size(); k++) {
-							
-							if(metricHeaders.get(k).getName().equals("totalEvents"))
-								entity.setTotalEvents(Integer.parseInt(values.getValues().get(k)));
-						}
-					}
-					
-					if(entity.getEventCategory().contains("수강신청_클릭")) {
-						for(DailyInformVO en : list) {
-							if(en.getPagePath() == null)continue;
-							if(entity.getEventAction().contains(en.getPagePath())) {
-								int entry = list.indexOf(en);							
-								en.setTotalEvents(entity.getTotalEvents());
-								list.set(entry, en);
-							}
-						}
-					}
-					
-				}
-			}
-			*/
-			
 		}
+		
 		
 		return list;
 	}
@@ -383,4 +287,5 @@ public class GaApiRunner {
 		  
 		  return code;
 	}
+
 }

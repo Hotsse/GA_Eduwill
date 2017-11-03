@@ -18,13 +18,13 @@
 <body>
 
 	<!-- The Modal -->
-	<div class="modal fade" id="myModal">
+	<div class="modal fade" id="dailyModal">
 		<div class="modal-dialog-lg">
 			<div class="modal-content">
 
 				<!-- Modal Header -->
 				<div class="modal-header">
-					<h4 class="modal-title">GA 정보 다운로드</h4>
+					<h4 class="modal-title">기간 GA 백업</h4>
 					<button type="button" class="close" data-dismiss="modal">&times;</button>
 				</div>
 
@@ -33,19 +33,54 @@
 					<h3 class="page-header">
 						기간 선택<small> 시작일 / 종료일</small>
 					</h3>
-					<form action="/update_analytics" method="post">
-						<input type="hidden" name="seq" value=${seq } />
-						<div class="col-sm-5 text-left">
-							시작일 : <input type="date" class="form-control" name="startDate" value=${param.startDate }>
+					<form action="/updateDailyData" method="post">
+						<div class="col-xs-5">
+							<label for="ex1">시작일</label> 
+							<input type="date" class="form-control" name="startDate">
 						</div>
-						<div class="col-sm-5 text-left">
-							종료일 : <input type="date" class="form-control" name="endDate" value=${param.endDate }>
+						<div class="col-xs-5">
+							<label for="ex2">종료일</label> 
+							<input type="date" class="form-control" name="endDate">
 						</div>
-						<div class="col-sm-2 text-center">
-							<br /> <input type="submit" class="btn btn-primary btn-block" value="백업" />
+						<div class="col-xs-2">
+							<label for="ex3">&nbsp;</label> 
+							<input type="submit" class="btn btn-primary btn-block" value="백업" />
 						</div>
 					</form>
-					<br/><br/>해당 기간 내의 GA 정보를 DB로 백업합니다.<br/>(기본값은 어제입니다)
+					<div>&nbsp;<br/>해당 일자의 GA 정보를 DB로 백업합니다.<br/>(기본값은 어제입니다)</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal fade" id="onedayModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title">일일 GA 백업</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body">
+					<h3 class="page-header">
+						기간 선택<small> 검색일자</small>
+					</h3>
+					<form action="/updateOnedayData" method="post">
+						<div class="col-xs-8">
+							<label for="ex1">검색일자</label> 
+							<input type="date" class="form-control" name="date">
+						</div>
+						<div class="col-xs-4">
+							<label for="ex2">&nbsp;</label> 
+							<input type="submit" class="btn btn-primary btn-block" value="백업" />
+						</div>
+					</form>
+					<div>&nbsp;<br/>해당 일자의 GA 정보를 DB로 백업합니다.<br/>(기본값은 어제입니다)</div>
+					
 				</div>
 
 			</div>
@@ -64,7 +99,9 @@
 		<div class="collapse navbar-collapse" id="myNavbar">
 			<ul class="nav navbar-nav">
 				<li class="active"><a href="#">상품페이지</a></li>
-				<li><a href="#" data-toggle="modal" data-target="#myModal">GA 정보 다운로드</a></li>
+				<li><a href="#" data-toggle="modal" data-target="#dailyModal">기간 GA 백업</a></li>
+				<li><a href="#" data-toggle="modal" data-target="#onedayModal">일일 GA 백업</a></li>
+				<li><a href="/updateYesterdayData">어제 GA 백업</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
 				<li><a href="#">로그인</li>

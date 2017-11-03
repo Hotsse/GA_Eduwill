@@ -89,6 +89,7 @@
 									<th>세션 수</th>
 									<th>방문자 수</th>
 									<th>이탈율</th>
+									<th>&nbsp;</th>
 									<!-- 
 									<th>전환</th>
 									<th>전환율</th>
@@ -104,6 +105,22 @@
 										<td>${inform.sessions}</td>
 										<td>${inform.entrances}</td>
 										<td>${inform.bounceRate}</td>
+										<td><button type="button" class="btn btn-default btn-sm" onclick="excel('excel_body')">엑셀 다운로드</button></td>
+										<!-- 
+										<td>${inform.totalEvents}</td>
+										<td>${inform.eventRate }</td>
+										 -->
+									</tr>
+								</c:forEach>
+								<c:forEach var="inform" items="${lastYearResult}" varStatus="status">
+									<tr style="color:#aaa;">
+										<td><small>(과년도)</small></td>
+										<td><small>(${inform.pageviews})</small></td>
+										<td><small>(${inform.uniquePageviews})</small></td>
+										<td><small>(${inform.sessions})</small></td>
+										<td><small>(${inform.entrances})</small></td>
+										<td><small>(${inform.bounceRate})</small></td>
+										<td>&nbsp;</td>
 										<!-- 
 										<td>${inform.totalEvents}</td>
 										<td>${inform.eventRate }</td>
@@ -114,6 +131,40 @@
 						</table>
 					</div>
 					
+					<!-- 엑셀 현재 -->
+					<form name="frm" method="post">
+						<input type="hidden" name="excel_data" />
+						<input type="hidden" name="excel_title" value="GA_Data_${param.seq}_${param.startDate}_${param.endDate}"/>
+					</form>
+					<table id="excel_body" style="display: none;">
+						<caption>masterSeq = ${param.seq} / Date = ${param.startDate } - ${param.endDate }</caption>
+						<thead>
+							<tr>
+								<th>Date</th>
+								<th>Pageviews</th>
+								<th>Unique Pageviews</th>
+								<th>Sessions</th>
+								<th>Entrances</th>
+								<th>Bounce Rate</th>
+							</tr>
+						</thead>
+						<tbody>
+							<c:forEach var="dailyexcel" items="${dailyDataList}" varStatus="status">
+								<tr>
+									<td>${dailyexcel.mDate}</td>
+									<td>${dailyexcel.mPageView}</td>
+									<td>${dailyexcel.mUniquePageviews}</td>
+									<td>${dailyexcel.mSessions}</td>
+									<td>${dailyexcel.mEntrances}</td>
+									<td>
+										<script>
+										document.write(eval("(${dailyexcel.mBounces} * 1.0) / (${dailyexcel.mSessions} * 1.0) * 100"));
+										</script>
+									</td>
+							</c:forEach>
+						</tbody>
+					</table>
+			
 					<!-- 통계(차트확인) -->
 					<div class="col-sm-12 text-left" id="Chart">
 						<h3 class="page-header">
@@ -287,9 +338,14 @@
 		</div>
 	</div>
 		
-
-	
 	<script>
+	
+	function excel(){
+		 document.frm.action = "/analytics/excel";
+		 document.frm.excel_data.value = document.getElementById("excel_body").outerHTML;
+		 document.frm.submit();
+	}
+	
 	$(document).ready(function(){
 		
 	  $(".navbar a, footer a[href='#myPage']").on('click', function(event) {

@@ -8,6 +8,9 @@ public class GaExceptionAdvice {
 
 	@ExceptionHandler(Exception.class)
 	public String common(Exception e) {
+		
+		e.printStackTrace();
+		
 		return "error_common";
 	}
 	

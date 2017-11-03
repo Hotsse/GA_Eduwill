@@ -39,14 +39,22 @@ public class GaApiServiceImpl implements GaApiService {
 		String startDate = (String) param.get("startDate");
 		String endDate = (String) param.get("endDate");
 		
+		String lastStartDate = parseLastYear(startDate);
+		String lastEndDate = parseLastYear(endDate);
+		
 		System.out.println("==========================================");
 		System.out.println("seq			: " + seq);
 		System.out.println("startDate	: " + startDate);
 		System.out.println("endDate		: " + endDate);
 		System.out.println("==========================================");
 		
+		
 		List<InformVO> resultList = dao.getSearchData(seq, startDate, endDate);
+		List<InformVO> lastResultList = null;
+		if(lastStartDate != null & lastEndDate != null)lastResultList = dao.getSearchData(seq, lastStartDate, lastEndDate);
+		
 		List<DailyVO> dailyDataList = dao.getDailyData(seq, startDate, endDate);
+		
 		
 		if(resultList.isEmpty())resultList = null;
 		else {
@@ -59,10 +67,22 @@ public class GaApiServiceImpl implements GaApiService {
 			}
 		}
 		
+		if(lastResultList == null || lastResultList.isEmpty())lastResultList = null;
+		else {
+			//calculate bounceRate, eventRate
+			DecimalFormat format = new DecimalFormat(".###"); // 소숫점 3자리 까지 제한
+			for(InformVO vo : lastResultList) {
+				vo.setBounceRate(Double.parseDouble(format.format(vo.getBounces() / (double)vo.getSessions() * 100)));
+				vo.setEventRate(Double.parseDouble(format.format(vo.getTotalEvents() / (double)vo.getPageviews() * 100)));
+			}
+			
+		}
+		
 		if(dailyDataList.isEmpty())dailyDataList = null;
 		
 		model.addAttribute("seq", seq);
 		model.addAttribute("result", resultList);
+		model.addAttribute("lastYearResult", lastResultList);
 		model.addAttribute("dailyDataList", dailyDataList);
 	}
 	
@@ -74,6 +94,28 @@ public class GaApiServiceImpl implements GaApiService {
 		
 		List<MercVO> codeList = replacePathToCode(dao.listAll());
 		dao.updateDailyData(gaApiRunner.getDailyData(codeList, startDate, endDate));
+	}
+	
+	@Override
+	public void updateYesterdayData(Map<String, Object> param, ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception{
+		
+		dao.updateDailyData(gaApiRunner.getYesterdayData());
+	}
+	
+	@Override
+	public void updateOnedayData(Map<String, Object> param, ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception{
+		
+		String date = (String) param.get("date");		
+		dao.updateDailyData(gaApiRunner.getOnedayData(date));
+	}
+	
+	private String parseLastYear(String date) {
+		if(date == null)return null;
+		
+		String year = date.substring(0,4);
+		String result = date.replace(year, String.valueOf(Integer.valueOf(year)-1));
+		
+		return result;
 	}
 	
 	private List<MercVO> replacePathToCode(List<MercVO> oldList) {
