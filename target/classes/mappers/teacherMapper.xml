@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.eduwill.intern.mapper.TeacherMapper">
+
+	<select id="listAll" resultType="TeacherVO">
+	<![CDATA[
+	select T_CODE as tcode, PROGRESS_CD as progress, SUBJECT_CD as subj, EXTRA_PARAM as extra 
+	from em_teacher_page_master
+	]]>
+	</select>
+	
+	<insert id="insertDailyData">
+	insert into tbl_information (delim, uDate, pageCode, pagePath, pageviews, uniquePageviews, sessions, bounces, totalEvents, entrances)
+	 values ('T', #{uDate}, #{pageCode}, #{pagePath}, #{pageviews}, #{uniquePageviews}, #{sessions}, #{bounces}, #{totalEvents}, #{entrances})
+	</insert>
+	
+	<delete id="deleteDailyData">
+	delete from tbl_information where uDate = #{uDate} AND pagePath = #{pagePath}
+	</delete>
+	
+	<select id="getIntegratedData" resultType="InformVO" parameterType="Map">
+	<![CDATA[
+	select pageCode, sum(pageviews) as pageviews, sum(uniquePageviews) as uniquePageviews, sum(sessions) as sessions, sum(bounces) as bounces, sum(totalEvents) as totalEvents, sum(entrances) as entrances 
+	from tbl_information 
+	where delim=#{delim} AND pageCode = #{seq} AND uDate >= #{startDate} AND uDate <= #{endDate} 
+	group by pageCode
+	]]>
+	</select>
+	
+	<select id="getDailyData" resultType="DailyVO" parameterType="Map">
+	<![CDATA[
+	select uDate as mDate, sum(pageviews) as mPageView, sum(uniquePageviews) as mUniquePageviews, sum(sessions) as mSessions, sum(bounces) as mBounces, sum(totalEvents) as mTotalEvents, sum(entrances) as mEntrances 
+	from tbl_information 
+	where pageCode = #{seq} 
+	AND delim = #{delim} 
+	AND uDate >= #{startDate} 
+	AND uDate <= #{endDate}
+	group by pageCode, uDate
+	]]>
+	</select>
+
+</mapper>

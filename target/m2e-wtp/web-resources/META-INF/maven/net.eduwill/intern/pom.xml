@@ -142,7 +142,14 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
 			<version>${org.springframework-version}</version>
-		</dependency>			
+		</dependency>	
+		
+		<!-- Google Analytics Repository -->
+		<dependency>
+	      <groupId>com.google.apis</groupId>
+	      <artifactId>google-api-services-analyticsreporting</artifactId>
+	      <version>v4-rev118-1.23.0</version>
+	    </dependency> 		
 		      
 	</dependencies>
     <build>

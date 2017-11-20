@@ -25,36 +25,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/google-api-services-analyticsreporting-v4-rev115-1.22.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/google-api-services-analyticsreporting-v4-rev115-1.22.0-javadoc.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/google-api-services-analyticsreporting-v4-rev115-1.22.0-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/google-api-client-1.22.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/google-api-client-android-1.22.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/google-api-client-appengine-1.22.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/google-api-client-gson-1.22.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/google-api-client-jackson2-1.22.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/google-api-client-java6-1.22.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/google-api-client-servlet-1.22.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/google-http-client-1.22.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/google-http-client-android-1.22.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/google-http-client-appengine-1.22.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/google-http-client-gson-1.22.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/google-http-client-jackson2-1.22.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/google-http-client-jdo-1.22.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/google-oauth-client-1.22.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/google-oauth-client-appengine-1.22.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/google-oauth-client-java6-1.22.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/google-oauth-client-jetty-1.22.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/google-oauth-client-servlet-1.22.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/gson-2.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/httpclient-4.0.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/httpcore-4.0.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/jackson-core-2.1.3.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/jdo2-api-2.3-eb.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/jetty-6.1.26.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/jetty-util-6.1.26.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/jsr305-1.3.9.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Administrator/Desktop/google-api-services-analyticsreporting-v4-rev115-java-1.22.0/analyticsreporting/libs/transaction-api-1.1.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

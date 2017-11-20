@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.eduwill.intern.mapper.GoodsMapper">
+
+	<!-- 원활한 테스트를 위해 검색되는 상품 튜플을 5종으로 제한함(NDcw, NTk4, NzMx, MjIy, ODY0) -->
+	<select id="listAll" resultType="GoodsVO">
+	<![CDATA[
+	select MASTER_SEQ as idx, MASTER_TITLE as name, PAGE_URL as code from tbl_goods_master 
+	where PAGE_URL like '%NDcw%' OR PAGE_URL like '%NTk4%' OR PAGE_URL like '%NzMx%' OR PAGE_URL like '%MjIy%' OR PAGE_URL like '%ODY0%'
+	]]>
+	</select>
+	
+	<insert id="insertDailyData">
+	insert into tbl_information (delim, uDate, pageCode, pagePath, pageviews, uniquePageviews, sessions, bounces, totalEvents, entrances)
+	 values ('G', #{uDate}, #{pageCode}, #{pagePath}, #{pageviews}, #{uniquePageviews}, #{sessions}, #{bounces}, #{totalEvents}, #{entrances})
+	</insert>
+	
+	<delete id="deleteDailyData">
+	delete from tbl_information where delim = 'G' AND uDate = #{uDate} AND pagePath = #{pagePath}
+	</delete>
+	
+	<select id="getIntegratedData" resultType="InformVO" parameterType="Map">
+	<![CDATA[
+	select pageCode, sum(pageviews) as pageviews, sum(uniquePageviews) as uniquePageviews, sum(sessions) as sessions, sum(bounces) as bounces, sum(totalEvents) as totalEvents, sum(entrances) as entrances 
+	from tbl_information 
+	where delim='G' AND pageCode = #{seq} AND uDate >= #{startDate} AND uDate <= #{endDate} 
+	group by pageCode
+	]]>
+	</select>
+	
+	<select id="getDailyData" resultType="DailyVO" parameterType="Map">
+	<![CDATA[
+	select uDate as mDate, sum(pageviews) as mPageView, sum(uniquePageviews) as mUniquePageviews, sum(sessions) as mSessions, sum(bounces) as mBounces, sum(totalEvents) as mTotalEvents, sum(entrances) as mEntrances 
+	from tbl_information 
+	where pageCode = #{seq} 
+	AND delim = 'G' 
+	AND uDate >= #{startDate} 
+	AND uDate <= #{endDate}
+	group by pageCode, uDate
+	]]>
+	</select>
+	
+	<select id="getPageName" resultType="GoodsVO" parameterType="Map">
+	select MASTER_TITLE as name from tbl_goods_master where MASTER_SEQ = #{code}
+	</select>
+
+</mapper>
