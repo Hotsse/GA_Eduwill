@@ -140,6 +140,40 @@ public class TeacherGaApiServiceImpl implements TeacherGaApiService {
 			
 		}
 		
+		if(dailyDataList_lastmonth != null && !dailyDataList_lastmonth.isEmpty()) {
+			for(DailyVO vo : dailyDataList_lastmonth) {
+				try {
+					SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd");
+					Date day = transFormat.parse(vo.getmDate());
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(day);
+					cal.add(Calendar.MONTH, 1);
+					String tmp = transFormat.format(cal.getTime());
+					vo.setmDate(tmp);
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+				}			
+			}
+		}
+		if(dailyDataList_lastyear != null && !dailyDataList_lastyear.isEmpty()) {
+			for(DailyVO vo : dailyDataList_lastyear) {
+				try {
+					SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd");
+					Date day = transFormat.parse(vo.getmDate());
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(day);
+					cal.add(Calendar.YEAR, 1);
+					String tmp = transFormat.format(cal.getTime());
+					vo.setmDate(tmp);
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		
 		//데이터 전송------------------------------------------------------------
 		model.addAttribute("seq", seq);
 		model.addAttribute("startDate", startDate);
@@ -167,6 +201,14 @@ public class TeacherGaApiServiceImpl implements TeacherGaApiService {
 	public void updateYesterdayData(Map<String, Object> param, ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception{
 		
 		dao.updateAnalyticsData(gaApiRunner.getYesterdayData());
+	}
+	
+	private Date getDayAgo(Date date) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.DATE, -1);
+
+		return cal.getTime();
 	}
 	
 	private Date getMonthAgo(Date date) {

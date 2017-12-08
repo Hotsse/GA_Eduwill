@@ -266,6 +266,8 @@
 						<script>
 							// 현재
 							var mdate = ["1999-01-01"];
+							var mdate_lastmonth = ["1999-01-01"];
+							var mdate_lastyear = ["1999-01-01"];
 							
 							var mpageView = [0];
 							var mUniquePageviews = [0];
@@ -314,6 +316,7 @@
 						
 						<c:forEach var="dailyDataList" items="${dailyDataList_lastmonth}" varStatus="status">
 							<script>
+								mdate_lastmonth.push("${dailyDataList.mDate}");
 								mpageView_lastmonth.push(${dailyDataList.mPageView});
 								mUniquePageviews_lastmonth.push(${dailyDataList.mUniquePageviews});
 								mSessions_lastmonth.push(${dailyDataList.mSessions});
@@ -327,6 +330,7 @@
 						
 						<c:forEach var="dailyDataList" items="${dailyDataList_lastyear}" varStatus="status">
 							<script>
+								mdate_lastyear.push("${dailyDataList.mDate}");
 								mpageView_lastyear.push(${dailyDataList.mPageView});
 								mUniquePageviews_lastyear.push(${dailyDataList.mUniquePageviews});
 								mSessions_lastyear.push(${dailyDataList.mSessions});
@@ -359,24 +363,26 @@
 							var dataEntrances_lastyear = [];
 							var dataBounceRate_lastyear = [];
 							
-							for (var i = 1; i < mdate.length; i ++) {
+							for (var i = 1; i < mpageView.length; i ++) {
 								dataPageviews.push([new Date(mdate[i]), mpageView[i]]);
 								dataUniquePageviews.push([new Date(mdate[i]), mUniquePageviews[i]]);
 								dataSessions.push([new Date(mdate[i]), mSessions[i]]);
 								dataEntrances.push([new Date(mdate[i]), mEntrances[i]]);
 								dataBounceRate.push([new Date(mdate[i]), mBounceRate[i]]);
-								
-								dataPageviews_lastmonth.push([new Date(mdate[i]), mpageView_lastmonth[i]]);
-								dataUniquePageviews_lastmonth.push([new Date(mdate[i]), mUniquePageviews_lastmonth[i]]);
-								dataSessions_lastmonth.push([new Date(mdate[i]), mSessions_lastmonth[i]]);
-								dataEntrances_lastmonth.push([new Date(mdate[i]), mEntrances_lastmonth[i]]);
-								dataBounceRate_lastmonth.push([new Date(mdate[i]), mBounceRate_lastmonth[i]]);
-								
-								dataPageviews_lastyear.push([new Date(mdate[i]), mpageView_lastyear[i]]);
-								dataUniquePageviews_lastyear.push([new Date(mdate[i]), mUniquePageviews_lastyear[i]]);
-								dataSessions_lastyear.push([new Date(mdate[i]), mSessions_lastyear[i]]);
-								dataEntrances_lastyear.push([new Date(mdate[i]), mEntrances_lastyear[i]]);
-								dataBounceRate_lastyear.push([new Date(mdate[i]), mBounceRate_lastyear[i]]);
+							}
+							for (var i = 1; i < mpageView_lastmonth.length; i++){
+								dataPageviews_lastmonth.push([new Date(mdate_lastmonth[i]), mpageView_lastmonth[i]]);
+								dataUniquePageviews_lastmonth.push([new Date(mdate_lastmonth[i]), mUniquePageviews_lastmonth[i]]);
+								dataSessions_lastmonth.push([new Date(mdate_lastmonth[i]), mSessions_lastmonth[i]]);
+								dataEntrances_lastmonth.push([new Date(mdate_lastmonth[i]), mEntrances_lastmonth[i]]);
+								dataBounceRate_lastmonth.push([new Date(mdate_lastmonth[i]), mBounceRate_lastmonth[i]]);
+							}
+							for( var i = 1; i < mpageView_lastyear.length; i++){
+								dataPageviews_lastyear.push([new Date(mdate_lastyear[i]), mpageView_lastyear[i]]);
+								dataUniquePageviews_lastyear.push([new Date(mdate_lastyear[i]), mUniquePageviews_lastyear[i]]);
+								dataSessions_lastyear.push([new Date(mdate_lastyear[i]), mSessions_lastyear[i]]);
+								dataEntrances_lastyear.push([new Date(mdate_lastyear[i]), mEntrances_lastyear[i]]);
+								dataBounceRate_lastyear.push([new Date(mdate_lastyear[i]), mBounceRate_lastyear[i]]);
 							}
 						
 						</script>						

@@ -25,41 +25,24 @@ public class MercDAOTest {
 
 	@Test
 	public void test() throws Exception {
+			
+		SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date date = new Date();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.DATE, -1);
+		String test1 = transFormat.format(cal.getTime());
+		String test2 = "2017-11-26";
 		
-		ArrayList<String> aList = new ArrayList<String>();
-		aList.add("and1");
-		aList.add("the");
-		aList.add("the");
-		aList.add("the");
-		aList.add("and");
-		aList.add("the");
-		aList.add("and");
-		aList.add("and");
-		aList.add("and1");
-		int size = aList.size();
-		for (int i = 0; i < size; i++) {
-			String firstVal = aList.get(i);
-			for (int j = i + 1; j < size; j++) {
-				String secondVal = aList.get(j);
-				if (firstVal.equals(secondVal)) {
-					aList.remove(j);
-					size--;
-					i = 0;
-					j--;
-				}
-			}
-		}
-		System.out.println(aList);
+		System.out.println(test1);
+		System.out.println(test2);
 		
-		String url = "http://www.eduwill.net/Won2/Teacher/Teacher/gov2/Teacher_Detail_review.asp?TCode=FL00";
-		String level1 = "/Won2/";
-		
-		String code = parseCodeInURL(url, level1);
-		
-		System.out.println("pageCode : " + code);
+		if(test2.equals(test1))System.out.println("equal");
 		
 		
 	}
+	
+	
 
 	private String parseCodeInURL(String url, String level1) throws Exception{
 		  
