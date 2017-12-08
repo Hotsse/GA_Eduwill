@@ -3,10 +3,10 @@ package ga.api.dao;
 import java.util.ArrayList;
 import java.util.List;
 
-import ga.common.DailyInformVO;
+import ga.api.domain.DailyInformVO;
+import ga.api.domain.DailyVO;
 import ga.api.domain.GoodsVO;
-import ga.common.InformVO;
-import ga.common.DailyVO;
+import ga.api.domain.InformVO;
 
 //Data Access Object to call MyBatis mapper;
 public interface GoodsDAO {

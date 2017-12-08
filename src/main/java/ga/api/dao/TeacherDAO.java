@@ -3,9 +3,9 @@ package ga.api.dao;
 import java.util.ArrayList;
 import java.util.List;
 
-import ga.common.DailyInformVO;
-import ga.common.DailyVO;
-import ga.common.InformVO;
+import ga.api.domain.DailyInformVO;
+import ga.api.domain.DailyVO;
+import ga.api.domain.InformVO;
 import ga.api.domain.TeacherVO;
 
 public interface TeacherDAO {

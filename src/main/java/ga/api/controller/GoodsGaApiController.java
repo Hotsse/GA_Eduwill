@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ga.api.service.GoodsGaApiService;
 import ga.api.service.GoodsService;
 
 /**
@@ -22,10 +21,6 @@ import ga.api.service.GoodsService;
 @Controller
 @RequestMapping("/goods")
 public class GoodsGaApiController {
-	
-	//Inject GA API Service to execute GA API logics;
-	@Autowired
-	private GoodsGaApiService goodsGaApiService;
 	
 	//Inject MyBatis(for merchandise) Service to execute MyBatis logics;
 	@Autowired
@@ -40,29 +35,11 @@ public class GoodsGaApiController {
 		return "goodsList";
 	}
 	
-	//update daily analytics data
-	@RequestMapping(value = "/updatePeriodData", method = RequestMethod.POST)
-	public String updatePeriodData(@RequestParam Map<String, Object> param, ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		
-		goodsGaApiService.updatePeriodData(param, model, request, response); // call service;
-		
-		return "redirect:/goods";
-	}
-	
-	//update yesterday analytics data
-	@RequestMapping(value = "/updateYesterdayData", method = RequestMethod.GET)
-	public String updateYesterdayData(@RequestParam Map<String, Object> param, ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		
-		goodsGaApiService.updateYesterdayData(param, model, request, response); // call service;
-		
-		return "redirect:/goods";
-	}
-	
 	//showing api information
 	@RequestMapping("/analytics")
 	public String main(@RequestParam Map<String, Object> param, ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
-		goodsGaApiService.readDataFromDB(param, model, request, response); //call service;
+		goodsService.readDataFromDB(param, model, request, response); //call service;
 		
 		return "analytics";
 	}
