@@ -1,6 +1,5 @@
 package ga.api.dao.impl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +10,6 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
 import ga.api.dao.TeacherDAO;
-import ga.api.domain.DailyInformVO;
 import ga.api.domain.DailyVO;
 import ga.api.domain.InformVO;
 import ga.api.domain.TeacherVO;
@@ -30,19 +28,6 @@ public class TeacherDAOImpl implements TeacherDAO {
 	@Override
 	public List<TeacherVO> listAll() throws Exception{
 		return session.selectList(namespace+".listAll");
-	}
-	
-	@Override
-	public void updateAnalyticsData(ArrayList<DailyInformVO> list) throws Exception{
-		
-		//중복 데이터 삭제
-		for(DailyInformVO vo : list) {
-			session.delete(namespace+".deleteDailyData", vo);
-		}
-		//새 데이터 생성
-		for(DailyInformVO vo : list) {
-			session.insert(namespace+".insertDailyData", vo);
-		}
 	}
 	
 	@Override
