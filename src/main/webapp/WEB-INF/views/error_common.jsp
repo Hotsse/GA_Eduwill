@@ -23,6 +23,5 @@
   <button class="btn btn-default btn-lg" onclick="history.back()">돌아가기</button>
 </div>
 
-
 </body>
 </html>

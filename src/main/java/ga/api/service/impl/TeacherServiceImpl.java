@@ -27,7 +27,13 @@ public class TeacherServiceImpl implements TeacherService {
 	@Autowired
 	private TeacherDAO dao;
 	
-	//get all of information in tbl_merchandise
+	/**
+	 * 교수소개 페이지의 전체 목록을 가져오는 메소드
+	 * @param param
+	 * @param model 교수소개 페이지 목록이 반환됨
+	 * @param request
+	 * @param response
+	 * */
 	@Override
 	public void ListAll(Map<String, Object> param, ModelMap model, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
@@ -37,6 +43,13 @@ public class TeacherServiceImpl implements TeacherService {
 		return;
 	}
 	
+	/**
+	 * DB 조회를 통해 검색 기간 내의 정보를 반환하는 메소드
+	 * @param param seq, startDate, endDate
+	 * @param model GA 화면 구성 정보를 반환
+	 * @param request
+	 * @param response
+	 * */
 	@Override
 	public void readDataFromDB(Map<String, Object> param, ModelMap model, HttpServletRequest request, HttpServletResponse response){
 		
